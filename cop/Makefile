@@ -1,25 +1,29 @@
-DIST := ~/opt/cop
+include env
+DIST := ~/opt
 BIN := ~/bin
-COM := $(BIN)/cop
 
 help:
 	@echo 'Usage:'	
 	@echo '	install command:	make install'
 	@echo '	uninstall command:	make uninstall'
+	@echo 'debug'
+	@echo '	PJ=[$(PJ)]'
+	@echo '	COM=[$(COM)]'
 
 install:
-	test ! -e $(DIST)
-	test ! -e $(COM)
-	chmod +x cop
-	-mkdir -p $(DIST)
-	cp ./* $(DIST)
+	test ! -e $(DIST)/$(PJ)
+	test ! -e $(BIN)/$(COM)
+
+	mkdir -p $(DIST)/$(PJ)
+	cp ./* $(DIST)/$(PJ)
+
 	-mkdir -p $(BIN)
-	-ln -s $(DIST)/cop $(COM)
+	ln -s $(DIST)/$(PJ)/$(COM) $(BIN)/$(COM)
 
 uninstall:
-	-unlink $(COM)
+	-unlink $(BIN)/$(COM)
 	-rmdir $(BIN)
-	-rm -r $(DIST)
+	-rm -r $(DIST)/$(COM)
 
 test:
 	bash ./test.sh
