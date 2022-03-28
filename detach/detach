@@ -90,7 +90,7 @@ command:
 }
 
 if {[llength $argv] < 1} {
-  puts "Usage: $argv0 [usageDesc]"
+    puts "Usage: [lindex [split $argv0 /] end] [usageDesc]"
   exit 1
 }
 
