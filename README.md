@@ -39,5 +39,4 @@ $ cop flush
 $ cop flush
 $ cop close
 $ ls
-$
 ```
