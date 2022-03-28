@@ -1,0 +1,105 @@
+#!/bin/bash
+SRC_HOME="$(dirname "$(readlink "$0")")"
+
+. "${SRC_HOME}/sock.sh"
+
+usage() {
+  printf "%s" "Usage: $(basename $0) [option]
+options:
+    clear [fd]..     : clear fd (default: all fd)
+    close            : close co-process
+    flush [fd]..     : show and clear fd (default fd:4)
+    help             : show usage
+    open co-process  : open co-process
+    read [fd]..      : show I/O (default fd: 4)
+    stream [args]    : write and flush 3
+    term             : send SIGTERM to co-process input
+    termw            : send SIGTERM and wait
+    wait             : wait until returning result
+    write [args]..   : write to co-process from stdin or args
+    writew [args]..  : write and wait
+fd:
+    0: stdin
+    1: stdout
+    2: stderr
+    3: stdout and stderr
+    4: all input and output
+"
+}
+
+(($#)) || {
+  usage
+  exit 1
+}
+
+case "$1" in
+  clear)
+    shift
+    _clear ${@:-0 1 2 3 4}
+    ;;
+  close)
+    _close
+    ;;
+  flush)
+    shift
+    _read ${@:-4}
+    _clear ${@:-4}
+    ;;
+  help)
+    usage
+    exit 1
+    ;;
+  open)
+    shift
+    _open "$@"
+    ;;
+  # openw)
+    # TODO sshなどのレスポンスを受け取れない場合があり混乱を招くので除外
+    # openw co-process : open and wait
+    # shift
+    # _wait _open "$@"
+    # ;;
+  read)
+    shift
+    _read "${@:-4}"
+    ;;
+  stream)
+    shift
+    _wait _write "$@"
+    _read 3
+    _clear 3
+    ;;
+  # streamt)
+    # TODO 挙動があやしいので除外
+    # streamt [args]   : write and term and flush 3
+    # shift
+    # _wait _write "$@" &
+    # PID=$!
+    # _term
+    # wait $PID
+    # _read 3
+    # _clear 3
+    # ;;
+  term)
+    _term
+    ;;
+  termw)
+    _wait _term
+    ;;
+  wait)
+    _wait
+    ;;
+  write)
+    shift
+    _write "$@"
+    ;;
+  writew)
+    shift
+    _wait _write "$@"
+    ;;
+  ?)
+    usage
+    exit 1
+    ;;
+esac
+

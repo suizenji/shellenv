@@ -1,0 +1,68 @@
+#!/usr/bin/env expect
+
+# set basic variables
+log_user 0
+set timeout 2
+set oneShot $argc
+
+# spawn and terminal setting
+set rcfile [file dirname $argv0]/input.rc
+set ps1 >>>
+spawn bash --login
+send "stty rows 9999 columns 9999
+bind -f $rcfile
+PS1='${ps1}'
+"
+
+# expect
+proc expcmp {cmd {count 0} {isVar 0}} {
+    send \025\015
+    send -- $cmd
+    send [format [join [lrepeat [incr count] \t] {}]]
+
+    set start $::ps1
+    set end <<<
+
+    expect $start {
+        send $end
+        expect *$start*$end {
+            set result $expect_out(buffer)
+	    set result [regsub {\n[^\n]+$} $result {}]
+
+	    if {[regexp -all {\n} $result]} {
+		set result [regsub {^[^\n]*\n} $result {}]
+	    }
+
+	    return $result
+        } *$end {
+            set result $expect_out(buffer)
+            set result [regsub {[[:cntrl:]]+$} $result {}]
+            set result [regsub -all {[\a]} $result {}]
+            set result [string map [list $start {} $end {}] $result]
+
+	    set isInvariable [string equal $cmd $result]
+	    if $isInvariable {
+		if {$count < 2} {return [expcmp $cmd $count $isVar]}
+		if $isVar {return $result}
+		return {}
+	    }
+
+            regexp {[^[:space:]]+[[:space:]]?$} $result ltoken
+            return $ltoken
+	}
+    }
+}
+
+expect ${ps1}$ {
+    if $oneShot {
+	set cmd [join $argv { }]
+        puts [expcmp $cmd]
+	exit
+    }
+
+    while {[gets stdin line] >= 0} {
+	set line [regsub {[[:space:]]+$} [string trimleft $line] { }]
+        puts [expcmp $line]
+	flush stdout
+    }
+}
