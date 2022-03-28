@@ -7,7 +7,7 @@
 #extend
 
 set config "
-  home [file normalize [file dirname $argv0]]
+  home [file normalize [file dirname [file readlink $argv0]]]
   file m.txt
   format {id name path}
   sep {%%}
@@ -115,8 +115,7 @@ switch [lindex $argv 0] {
       }
 
       set id [getid]
-      set dir [file dirname $argv0]
-      set dist [file normalize "${dir}/${id}"]
+      set dist [file normalize "[dict get $config home]/${id}"]
       file rename -- $src $dist
       save [list id $id name [file tail $src] path [file normalize $src]]
     }
