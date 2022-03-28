@@ -40,3 +40,22 @@ $ cop flush
 $ cop close
 $ ls
 ```
+
+<br>
+
+## detach
+
+### Usage
+```
+$ ls
+file1  file2
+$ detach file1
+$ ls
+file2
+$ detach pop
+$ ls
+file1  file2
+```
+
+### require
+tcl, ed
