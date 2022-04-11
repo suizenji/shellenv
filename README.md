@@ -59,3 +59,8 @@ file1  file2
 
 ### require
 tcl, ed
+
+<br>
+
+## opnssl
+openssl, telnet, socat, make, shell
