@@ -38,7 +38,7 @@ usage:
 	@echo '	make ore.crt'
 	@echo '	make ore.crt CSR_SUB=/C=JP'
 	@echo '	make clean ore.crt CSR_SUB=/C=JP'
-	@echo '	make ore.server SRV_PORT=4443 BI_ADDR2="system:./response.sh"'
+	@echo '	make ore.server SRV_PORT=8443 BI_ADDR2="system:./response.sh"'
 	@echo '	make ca.ext EXT_TYPE=CA ca.crt ca.show-crt'
 	@echo '	make root.crt && make child.crt CA=root CRT_CHAIN=1'
 	@echo '	make help'
