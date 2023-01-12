@@ -1,17 +1,16 @@
 # TODO: install docker, chrome
 
 help:
-	@echo for ubuntu 22
+	@echo for ubuntu 22, git sdk
 
 apt:
-	sudo apt install -y emacs-nox silversearcher-ag socat
+	apt install -y emacs-nox silversearcher-ag socat tmux
+
+pacman:
+	pacman -Syy --noconfirm emacs
 
 snap:
-	sudo snap install firefox
-
-update:
-	sudo apt update && sudo apt -y upgrade
-	sudo snap refresh
+	snap install firefox
 
 ~/.emacs.d:
 	git clone https://github.com/suizenji/emacs.git
@@ -21,7 +20,6 @@ update:
 
 emacs: ~/.emacs.d/init.elc
 
-
 ~/.tmux.conf:
 	cp ../conf/tmux.conf $@
 
@@ -29,9 +27,9 @@ emacs: ~/.emacs.d/init.elc
 	@: > wsl.conf
 	@echo '[boot]' >> wsl.conf
 	@echo 'systemd = true' >> wsl.conf
-	sudo mv wsl.conf $@
+	mv wsl.conf $@
 
 conf: ~/.tmux.conf /etc/wsl.conf
 
-clean-conf:
-	sudo rm ~/.tmux.conf /etc/wsl.conf
+clean:
+	rm -rf ~/.emacs.d ~/.tmux.conf /etc/wsl.conf
