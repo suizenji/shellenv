@@ -13,10 +13,10 @@ snap:
 	snap install firefox
 
 ~/.emacs.d:
-	git clone https://github.com/suizenji/emacs.git
+	git clone https://github.com/suizenji/emacs.git $@
 
 ~/.emacs.d/init.elc: ~/.emacs.d
-	cd $@ && make
+	cd ~/.emacs.d && make
 
 emacs: ~/.emacs.d/init.elc
 
