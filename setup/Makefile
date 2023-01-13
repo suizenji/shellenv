@@ -1,7 +1,7 @@
 # TODO: install docker, chrome
 
 ifeq ($(shell uname | cut -c -5),MINGW)
-sudo :=
+sudo := /c/Program\ Files\ \(x86\)/gsudo/gsudo.exe
 else
 sudo := sudo
 endif
@@ -13,7 +13,10 @@ apt:
 	sudo apt install -y emacs-nox silversearcher-ag socat tmux
 
 mingw:
-	pacman -S --noconfirm emacs socat tmux
+	pacman -S --noconfirm emacs socat tmux mingw64/mingw-w64-x86_64-nodejs mingw64/mingw-w64-x86_64-ag
+
+gsudo:
+	powershell Start-Process "winget \"install gsudo\"" -Verb runas
 
 snap:
 	sudo snap install firefox
