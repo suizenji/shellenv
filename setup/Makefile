@@ -13,7 +13,7 @@ apt:
 	sudo apt install -y emacs-nox silversearcher-ag socat tmux
 
 mingw:
-	pacman -S --noconfirm emacs tmux
+	pacman -S --noconfirm emacs socat tmux
 
 snap:
 	sudo snap install firefox
