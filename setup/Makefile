@@ -1,16 +1,22 @@
 # TODO: install docker, chrome
 
+ifeq ($(shell uname | cut -c -5),MINGW)
+sudo :=
+else
+sudo := sudo
+endif
+
 help:
 	@echo for ubuntu 22, git sdk
 
 apt:
-	apt install -y emacs-nox silversearcher-ag socat tmux
+	sudo apt install -y emacs-nox silversearcher-ag socat tmux
 
-pacman:
-	pacman -Syy --noconfirm emacs
+mingw:
+	pacman -S --noconfirm emacs tmux
 
 snap:
-	snap install firefox
+	sudo snap install firefox
 
 ~/.emacs.d:
 	git clone https://github.com/suizenji/emacs.git $@
@@ -27,9 +33,9 @@ emacs: ~/.emacs.d/init.elc
 	@: > wsl.conf
 	@echo '[boot]' >> wsl.conf
 	@echo 'systemd = true' >> wsl.conf
-	mv wsl.conf $@
+	$(sudo) mv wsl.conf $@
 
 conf: ~/.tmux.conf /etc/wsl.conf
 
 clean:
-	rm -rf ~/.emacs.d ~/.tmux.conf /etc/wsl.conf
+	$(sudo) rm -rf ~/.emacs.d ~/.tmux.conf /etc/wsl.conf
