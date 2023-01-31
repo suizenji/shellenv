@@ -40,5 +40,10 @@ emacs: ~/.emacs.d/init.elc
 
 conf: ~/.tmux.conf /etc/wsl.conf
 
-clean:
-	$(sudo) rm -rf ~/.emacs.d ~/.tmux.conf /etc/wsl.conf
+clean-emacs:
+	rm -rf ~/.emacs.d
+
+clean-conf:
+	$(sudo) rm -rf ~/.tmux.conf /etc/wsl.conf
+
+clean-all: clean-conf clean-emacs
