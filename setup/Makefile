@@ -1,4 +1,4 @@
-# TODO: install docker, chrome, gtags, node
+# TODO: install docker, chrome, node
 # php, symfony, composer
 
 ifeq ($(shell uname | cut -c -5),MINGW)
@@ -11,10 +11,10 @@ help:
 	@echo for ubuntu 22, git sdk
 
 apt:
-	sudo apt install -y emacs-nox tmux silversearcher-ag socat tree
+	sudo apt install -y emacs-nox tmux silversearcher-ag socat tree global
 
 mingw:
-	pacman -S --noconfirm emacs tmux mingw64/mingw-w64-x86_64-ag socat tree mingw64/mingw-w64-x86_64-nodejs
+	pacman -S --noconfirm emacs tmux mingw64/mingw-w64-x86_64-ag socat tree global mingw64/mingw-w64-x86_64-nodejs
 
 gsudo:
 	powershell Start-Process "winget \"install gsudo\"" -Verb runas
