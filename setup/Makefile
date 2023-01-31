@@ -10,10 +10,10 @@ help:
 	@echo for ubuntu 22, git sdk
 
 apt:
-	sudo apt install -y emacs-nox silversearcher-ag socat tmux
+	sudo apt install -y emacs-nox tmux silversearcher-ag socat tree
 
 mingw:
-	pacman -S --noconfirm emacs socat tmux mingw64/mingw-w64-x86_64-nodejs mingw64/mingw-w64-x86_64-ag
+	pacman -S --noconfirm emacs tmux mingw64/mingw-w64-x86_64-ag socat tree mingw64/mingw-w64-x86_64-nodejs
 
 gsudo:
 	powershell Start-Process "winget \"install gsudo\"" -Verb runas
