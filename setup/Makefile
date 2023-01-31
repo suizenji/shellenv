@@ -1,4 +1,5 @@
-# TODO: install docker, chrome
+# TODO: install docker, chrome, gtags, node
+# php, symfony, composer
 
 ifeq ($(shell uname | cut -c -5),MINGW)
 sudo := /c/Program\ Files\ \(x86\)/gsudo/gsudo.exe
