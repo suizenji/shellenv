@@ -1,4 +1,5 @@
-# TODO: install docker, chrome, node
+# TODO: install chrome, node
+# TODO: docker and podman
 # php, symfony, composer
 
 ifeq ($(shell uname | cut -c -5),MINGW)
@@ -14,7 +15,7 @@ apt:
 	sudo apt install -y emacs-nox tmux silversearcher-ag socat tree global
 
 mingw:
-	pacman -S --noconfirm emacs tmux mingw64/mingw-w64-x86_64-ag socat tree global clang64/mingw-w64-clang-x86_64-nodejs
+	pacman -S --noconfirm emacs tmux mingw64/mingw-w64-x86_64-ag socat tree global clang64/mingw-w64-clang-x86_64-nodejs mingw64/mingw-w64-x86_64-podman
 	@echo '>>> Node.js config'
 	@echo export NODE_SKIP_PLATFORM_CHECK=1
 	@echo export PATH=\"\$$PATH:/clang64/bin\"
