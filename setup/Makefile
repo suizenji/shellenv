@@ -1,5 +1,4 @@
 # TODO: install chrome, node
-# TODO: docker and podman
 # php, symfony, composer
 
 ifeq ($(shell uname | cut -c -5),MINGW)
@@ -10,9 +9,10 @@ endif
 
 help:
 	@echo for ubuntu 22, git sdk
+#TODO arch, bsd
 
 apt:
-	sudo apt install -y emacs-nox tmux silversearcher-ag socat tree global
+	sudo apt install -y emacs-nox tmux silversearcher-ag socat tree global podman qumu-system
 
 mingw:
 	pacman -S --noconfirm emacs tmux mingw64/mingw-w64-x86_64-ag socat tree global clang64/mingw-w64-clang-x86_64-nodejs mingw64/mingw-w64-x86_64-podman
