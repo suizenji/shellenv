@@ -12,8 +12,9 @@ help:
 #TODO arch, bsd
 
 apt:
-	sudo apt install -y emacs-nox tmux silversearcher-ag socat tree global podman qumu-system nodejs
-	sudo npm install --global n && sudo n install lts && sudo apt uninstall nodejs
+	sudo apt install -y emacs-nox tmux silversearcher-ag socat tree global podman qemu-system nodejs
+	sudo npm install --global n && sudo n install lts && sudo apt remove -y nodejs
+	sudo apt -y autoremove
 
 mingw:
 	pacman -S --noconfirm emacs tmux mingw64/mingw-w64-x86_64-ag socat tree global clang64/mingw-w64-clang-x86_64-nodejs mingw64/mingw-w64-x86_64-podman
