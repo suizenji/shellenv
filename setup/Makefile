@@ -40,10 +40,7 @@ emacs: ~/.emacs.d/init.elc
 	cp ../conf/tmux.conf $@
 
 /etc/wsl.conf:
-	@: > wsl.conf
-	@echo '[boot]' >> wsl.conf
-	@echo 'systemd = true' >> wsl.conf
-	$(sudo) mv wsl.conf $@
+	$(sudo) cp ../conf/wsl.conf $@
 
 conf: ~/.tmux.conf /etc/wsl.conf
 
