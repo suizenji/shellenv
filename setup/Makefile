@@ -12,7 +12,7 @@ help:
 #TODO arch, bsd
 
 apt:
-	sudo apt install -y emacs-nox tmux silversearcher-ag socat tree global podman qemu-system nodejs
+	sudo apt install -y emacs-nox tmux silversearcher-ag socat tree global podman qemu-system npm
 	sudo npm install --global n && sudo n install lts && sudo apt remove -y nodejs
 	sudo apt -y autoremove
 
