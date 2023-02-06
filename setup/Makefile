@@ -31,7 +31,7 @@ apt-node:
 	sudo apt -y autoremove
 
 apt: apt-kubic apt-node
-	sudo apt install -y emacs-nox tmux silversearcher-ag socat tree global podman qemu-system sqlite3 python3-pip
+	sudo apt install -y emacs-nox tmux silversearcher-ag socat tree global podman qemu-system python3-pip sqlite3
 
 podman-compose: ~/.local/bin/podman-compose
 ~/.local/bin/podman-compose:
@@ -40,7 +40,7 @@ podman-compose: ~/.local/bin/podman-compose
 	@echo export PATH=\"\$$PATH:~/.local/bin\"
 
 mingw:
-	pacman -S --noconfirm emacs tmux mingw64/mingw-w64-x86_64-ag socat tree global clang64/mingw-w64-clang-x86_64-nodejs mingw64/mingw-w64-x86_64-podman
+	pacman -S --noconfirm emacs tmux mingw64/mingw-w64-x86_64-ag socat tree global clang64/mingw-w64-clang-x86_64-nodejs mingw64/mingw-w64-x86_64-podman python3-pip
 	@echo '>>> Node.js config'
 	@echo export NODE_SKIP_PLATFORM_CHECK=1
 	@echo export PATH=\"\$$PATH:/clang64/bin\"
