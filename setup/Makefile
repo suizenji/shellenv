@@ -41,8 +41,8 @@ podman-compose: ~/.local/bin/podman-compose
 	@echo export PATH=\"\$$PATH:~/.local/bin\"
 
 mingw:
-	pacman -S --noconfirm emacs tmux mingw64/mingw-w64-x86_64-ag socat tree global clang64/mingw-w64-clang-x86_64-nodejs mingw64/mingw-w64-x86_64-podman clang64/mingw-w64-clang-x86_64-python-pip
-	make podman-compose
+	pacman -S --noconfirm emacs tmux mingw64/mingw-w64-x86_64-ag socat tree global clang64/mingw-w64-clang-x86_64-nodejs
+	pacman -S --noconfirm mingw64/mingw-w64-x86_64-podman mingw64/mingw-w64-x86_64-podman-compose
 	@echo '>>> next'
 	@echo export NODE_SKIP_PLATFORM_CHECK=1
 	@echo export PATH=\"\$$PATH:/clang64/bin\"
