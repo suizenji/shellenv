@@ -44,9 +44,13 @@ podman-compose: ~/.local/bin/podman-compose
 mingw:
 	pacman -S --noconfirm emacs tmux mingw64/mingw-w64-x86_64-ag socat tree global clang64/mingw-w64-clang-x86_64-nodejs
 	pacman -S --noconfirm mingw64/mingw-w64-x86_64-podman mingw64/mingw-w64-x86_64-podman-compose
-	@echo '>>> next'
-	@echo export NODE_SKIP_PLATFORM_CHECK=1
-	@echo export PATH=\"\$$PATH:/clang64/bin\"
+
+mingw-profile := ~/.profile
+mingw-conf:
+	@: > $(mingw-profile)
+	@echo export PATH=\"\$$PATH:/mingw64/bin\" >> $(mingw-profile)
+	@echo export PATH=\"\$$PATH:/clang64/bin\" >> $(mingw-profile)
+	@echo export NODE_SKIP_PLATFORM_CHECK=1 >> $(mingw-profile)
 
 gsudo:
 	powershell Start-Process "winget \"install gsudo\"" -Verb runas
