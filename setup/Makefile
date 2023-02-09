@@ -52,6 +52,10 @@ mingw-conf:
 	@echo export PATH=\"\$$PATH:/clang64/bin\" >> $(mingw-profile)
 	@echo export NODE_SKIP_PLATFORM_CHECK=1 >> $(mingw-profile)
 
+win-bash: ~/bash.cmd
+~/bash.cmd:
+	@echo "C:\git-sdk-64\usr\bin\bash.exe --login" > $@
+
 gsudo:
 	powershell Start-Process "winget \"install gsudo\"" -Verb runas
 
