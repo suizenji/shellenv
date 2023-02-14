@@ -2,7 +2,8 @@
 # php, symfony, composer (on vm)
 
 ifeq ($(shell uname | cut -c -5),MINGW)
-sudo := /c/Program\ Files\ \(x86\)/gsudo/gsudo.exe
+#sudo := /c/Program\ Files\ \(x86\)/gsudo/gsudo.exe
+sudo :=
 else
 sudo := sudo
 endif
