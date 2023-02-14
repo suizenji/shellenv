@@ -11,6 +11,9 @@ help:
 	@echo for ubuntu 22, git sdk
 #TODO arch, bsd
 
+windows: mingw winget mingw-conf conf emacs win-bash
+ubuntu: apt conf emacs
+
 # https://podman.io/getting-started/installation.html#ubuntu
 apt-kubic-repo := https://download.opensuse.org/repositories/devel:kubic:libcontainers:unstable/xUbuntu_$$(lsb_release -rs)
 apt-kubic-key := /etc/apt/keyrings/devel_kubic_libcontainers_unstable.gpg
@@ -40,8 +43,6 @@ podman-compose: ~/.local/bin/podman-compose
 	pip3 install https://github.com/containers/podman-compose/archive/devel.tar.gz
 	@echo '>>> next'
 	@echo export PATH=\"\$$PATH:~/.local/bin\"
-
-windows: mingw winget mingw-conf conf emacs win-bash
 
 mingw:
 	pacman -S --noconfirm emacs tmux mingw64/mingw-w64-x86_64-ag socat tree global clang64/mingw-w64-clang-x86_64-nodejs
