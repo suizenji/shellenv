@@ -60,13 +60,8 @@ winget:
 
 mingw-conf: mingw-profile mingw-hosts
 
-mingw-profile := ~/.profile
 mingw-profile:
-	@: > $(mingw-profile)
-	@echo export PATH=\"\$${PATH}:/clang64/bin\" >> $(mingw-profile)
-	@echo export PATH=\"\$${PATH}:/mingw64/bin\" >> $(mingw-profile)
-	@echo export PATH=\"/c/Program Files/RedHat/Podman:\$${PATH}\" >> $(mingw-profile)
-	@echo export NODE_SKIP_PLATFORM_CHECK=1 >> $(mingw-profile)
+	cp ../conf/mingw-profile ~/.profile
 
 mingw-hosts:
 	echo 'mklink hosts C:\Windows\System32\drivers\etc\hosts' | gsudo cmd
