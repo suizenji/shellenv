@@ -36,7 +36,7 @@ apt-node:
 apt: apt-kubic apt-node
 	sudo apt install -y emacs-nox tmux silversearcher-ag socat tree global python3-pip sqlite3
 	sudo apt install -y podman qemu-system
-	make podman-comopse
+	make podman-compose
 
 podman-compose: ~/.local/bin/podman-compose
 ~/.local/bin/podman-compose:
