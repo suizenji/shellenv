@@ -58,8 +58,10 @@ winget:
 	$(call winget-install, podman)
 	$(call winget-install, gsudo)
 
+mingw-conf: mingw-profile mingw-hosts
+
 mingw-profile := ~/.profile
-mingw-conf:
+mingw-profile:
 	@: > $(mingw-profile)
 	@echo export PATH=\"\$${PATH}:/clang64/bin\" >> $(mingw-profile)
 	@echo export PATH=\"\$${PATH}:/mingw64/bin\" >> $(mingw-profile)
