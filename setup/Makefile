@@ -66,6 +66,10 @@ mingw-conf:
 	@echo export PATH=\"/c/Program Files/RedHat/Podman:\$${PATH}\" >> $(mingw-profile)
 	@echo export NODE_SKIP_PLATFORM_CHECK=1 >> $(mingw-profile)
 
+mingw-hosts:
+	echo 'mklink hosts C:\Windows\System32\drivers\etc\hosts' | gsudo cmd
+	mv hosts /etc/hosts
+
 win-bash: ~/bash.cmd
 ~/bash.cmd:
 	@echo "C:\git-sdk-64\usr\bin\bash.exe --login" > $@
