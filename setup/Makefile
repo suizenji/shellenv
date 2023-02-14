@@ -41,12 +41,20 @@ podman-compose: ~/.local/bin/podman-compose
 	@echo '>>> next'
 	@echo export PATH=\"\$$PATH:~/.local/bin\"
 
-windows: mingw gsudo mingw-conf conf emacs win-bash
+windows: mingw winget mingw-conf conf emacs win-bash
 
 mingw:
 	pacman -S --noconfirm emacs tmux mingw64/mingw-w64-x86_64-ag socat tree global clang64/mingw-w64-clang-x86_64-nodejs
 	pacman -S --noconfirm mingw64/mingw-w64-x86_64-podman mingw64/mingw-w64-x86_64-podman-compose
-	winget install podman
+
+define winget-install
+    winget list $1 || winget install $1
+endef
+#    winget list $1 || powershell Start-Process "winget \"install $1\"" -Verb runas
+
+winget:
+	$(call winget-install, podman)
+	$(call winget-install, gsudo)
 
 mingw-profile := ~/.profile
 mingw-conf:
@@ -59,9 +67,6 @@ mingw-conf:
 win-bash: ~/bash.cmd
 ~/bash.cmd:
 	@echo "C:\git-sdk-64\usr\bin\bash.exe --login" > $@
-
-gsudo:
-	powershell Start-Process "winget \"install gsudo\"" -Verb runas
 
 snap:
 	sudo snap install firefox
