@@ -34,7 +34,7 @@ apt-node:
 	sudo apt -y autoremove
 
 apt-up:
-	apt update && apt upgrade -y
+	sudo apt update && sudo apt upgrade -y
 
 apt:
 	sudo apt install -y emacs-nox tmux silversearcher-ag socat tree global sqlite3 gdb
