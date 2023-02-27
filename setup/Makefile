@@ -13,7 +13,7 @@ help:
 #TODO arch, bsd
 
 windows: mingw winget mingw-conf conf emacs win-bash
-ubuntu: apt conf emacs
+ubuntu: apt-kubic apt-up apt apt-node podman-compose conf emacs
 
 # https://podman.io/getting-started/installation.html#ubuntu
 apt-kubic-repo := https://download.opensuse.org/repositories/devel:kubic:libcontainers:unstable/xUbuntu_$$(lsb_release -rs)
@@ -21,7 +21,6 @@ apt-kubic-key := /etc/apt/keyrings/devel_kubic_libcontainers_unstable.gpg
 apt-kubic-list := /etc/apt/sources.list.d/devel-kubic-libcontainers-nunstable.list
 
 apt-kubic: $(apt-kubic-key) $(apt-kubic-list)
-	sudo apt update
 
 $(apt-kubic-key):
 	curl -fsSL $(apt-kubic-repo)/Release.key | gpg --dearmor | sudo tee "$@" > /dev/null
@@ -34,7 +33,10 @@ apt-node:
 	sudo npm install --global n && sudo n install lts && sudo apt remove -y nodejs npm
 	sudo apt -y autoremove
 
-apt: apt-kubic apt-node
+apt-up:
+	apt update && apt upgrade -y
+
+apt:
 	sudo apt install -y emacs-nox tmux silversearcher-ag socat tree global sqlite3 gdb
 	sudo apt install -y podman qemu-system python3-pip
 	make podman-compose
