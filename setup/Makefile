@@ -37,7 +37,7 @@ apt-up:
 	sudo apt update && sudo apt upgrade -y
 
 apt:
-	sudo apt install -y emacs-nox tmux silversearcher-ag socat tree global sqlite3 gdb
+	sudo apt install -y emacs-nox tmux silversearcher-ag socat tree global sqlite3 gdb unzip
 	sudo apt install -y podman qemu-system python3-pip
 	make podman-compose
 
