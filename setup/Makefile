@@ -88,14 +88,16 @@ emacs: ~/.emacs.d/init.elc
 	cp ../conf/tmux.conf $@
 
 /etc/wsl.conf:
-	$(sudo) cp ../conf/wsl.conf $@
+	sudo cp ../conf/wsl.conf $@
 
-conf: ~/.tmux.conf /etc/wsl.conf
+wsl-conf: /etc/wsl.conf
+
+conf: ~/.tmux.conf
 
 clean-emacs:
 	rm -rf ~/.emacs.d
 
 clean-conf:
-	$(sudo) rm -rf ~/.tmux.conf /etc/wsl.conf
+	rm -rf ~/.tmux.conf
 
 clean-all: clean-conf clean-emacs
