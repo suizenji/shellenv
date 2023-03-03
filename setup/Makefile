@@ -84,20 +84,23 @@ snap:
 
 emacs: ~/.emacs.d/init.elc
 
-~/.tmux.conf:
-	cp ../conf/tmux.conf $@
-
 /etc/wsl.conf:
 	sudo cp ../conf/wsl.conf $@
 
 wsl-conf: /etc/wsl.conf
 
-conf: ~/.tmux.conf
+~/.tmux.conf:
+	cp ../conf/tmux.conf $@
+
+~/.gdbinit:
+	wget -P ~ https://git.io/.gdbinit
+
+conf: ~/.tmux.conf ~/.gdbinit
 
 clean-emacs:
 	rm -rf ~/.emacs.d
 
 clean-conf:
-	rm -rf ~/.tmux.conf
+	rm -rf ~/.tmux.conf ~/.gdbinit
 
 clean-all: clean-conf clean-emacs
