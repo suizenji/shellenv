@@ -37,7 +37,7 @@ apt-up:
 	sudo apt update && sudo apt upgrade -y
 
 apt:
-	sudo apt install -y emacs-nox tmux silversearcher-ag socat tree global sqlite3 gdb unzip
+	sudo apt install -y emacs-nox tmux silversearcher-ag socat tree global sqlite3 gdb unzip bc
 	sudo apt install -y podman qemu-system python3-pip
 	make podman-compose
 
@@ -48,7 +48,7 @@ podman-compose: ~/.local/bin/podman-compose
 	@echo export PATH=\"\$$PATH:~/.local/bin\"
 
 mingw:
-	pacman -S --noconfirm emacs tmux mingw64/mingw-w64-x86_64-ag socat tree global clang64/mingw-w64-clang-x86_64-nodejs
+	pacman -S --noconfirm emacs tmux mingw64/mingw-w64-x86_64-ag socat tree global clang64/mingw-w64-clang-x86_64-nodejs bc
 	pacman -S --noconfirm mingw64/mingw-w64-x86_64-podman mingw64/mingw-w64-x86_64-podman-compose
 
 define winget-install
