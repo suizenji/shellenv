@@ -1,4 +1,5 @@
 all:
+	@echo 'podman run -itd id'
 	@echo 'podman build . -it name'
 	@echo 'podman stop $$(podman ps -q)'
 	@echo 'podman stop -l'
