@@ -1,0 +1,3 @@
+#!/usr/bin/env expect
+
+puts foo
