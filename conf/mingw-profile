@@ -3,5 +3,6 @@ export PATH="${PATH}:/mingw64/bin"
 export PATH="/c/Program Files/RedHat/Podman:${PATH}"
 
 export NODE_SKIP_PLATFORM_CHECK=1
+export TCLLIBPATH=" . /mingw64/lib/tcllib1.21"
 
 alias podman='winpty podman'

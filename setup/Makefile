@@ -69,6 +69,9 @@ mingw-hosts:
 	echo 'mklink hosts C:\Windows\System32\drivers\etc\hosts' | gsudo cmd
 	mv hosts /etc/hosts
 
+mingw-clean:
+	rm -rf ~/.profile /etc/hosts
+
 win-bash: ~/bash.cmd
 ~/bash.cmd:
 	@echo "C:\git-sdk-64\usr\bin\bash.exe --login" > $@
