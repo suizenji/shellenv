@@ -1,0 +1,47 @@
+#!/usr/bin/env expect
+
+# SMTPサーバーの情報
+set smtp_server localhost
+set smtp_port 1025
+set from "from@example.com"
+set to "ziogoro@google.com"
+set subject "Test email"
+set message "This is a test email sent using Telnet and Expect."
+
+# telnetを起動してSMTPサーバーに接続する
+spawn telnet $smtp_server $smtp_port
+expect "220 *"
+
+# EHLOコマンドを送信する
+send "EHLO $smtp_server\r"
+expect "250 *"
+
+# MAIL FROMコマンドを送信する
+send "MAIL FROM: <$from>\r"
+expect "250 *"
+
+# RCPT TOコマンドを送信する
+send "RCPT TO: <$to>\r"
+expect "250 *"
+
+# DATAコマンドを送信する
+send "DATA\r"
+expect "354 *"
+
+# メールのヘッダーを送信する
+send "From: $from\r"
+send "To: $to\r"
+send "Subject: $subject\r"
+send "\r\n"
+
+# メールの本文を送信する
+send "$message\r\n"
+send ".\r"
+expect "250 *"
+
+# QUITコマンドを送信して、SMTPセッションを終了する
+send "QUIT\r"
+expect "221 *"
+
+# telnetを終了する
+close
