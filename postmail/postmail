@@ -39,5 +39,10 @@ if {[expr {$params(o) != ""}]} {lappend args -originator $params(o)}
 # send
 set token [mime::initialize -canonical text/plain -string $params(b)]
 mime::setheader $token Subject $params(t)
-smtp::sendmessage $token {*}$args
+set result [smtp::sendmessage $token {*}$args]
 mime::finalize $token
+
+if {[expr {$result != ""}]} {
+    puts stderr $result
+    exit 1
+}
