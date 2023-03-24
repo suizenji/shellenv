@@ -1,19 +1,68 @@
 #!/usr/bin/env expect
 
-# SMTPサーバーの情報
-set smtp_server localhost
-set smtp_port 1025
-set from "from@example.com"
-set to "ziogoro@google.com"
-set subject "Test email"
-set message "This is a test email sent using Telnet and Expect."
+set server localhost
+set port 25
+#set from $::env(USER)@[info hostname]localdomain
+set from ""
+set to ""
+set subject ""
+set message ""
+set should_outval 0
+
+proc lshift {listVar {count 1}} {
+    upvar 1 $listVar l
+    set r [lrange $l 0 [incr count -1]]
+    set l [lreplace $l [set l 0] $count]
+    return $r
+}
+
+proc show_help {} {
+    puts "post mail with telnet"
+    puts "options:"
+    puts "    -h: show this help"
+    puts "    -e: show settings"
+    puts "    -s server"
+    puts "    -p port"
+    puts "    -o org(from)"
+    puts "    -r recp(to)"
+    puts "    -t title(subject)"
+    puts "    -b body(message)"
+}
+
+while {[llength $argv] > 0} {
+    set arg [lindex $argv 0]
+    set value ""
+
+    switch -- $arg {
+	-h { show_help; exit 0; }
+	-e { set should_outval 1 }
+	-s { set server [lindex $argv 1] }
+	-p { set port [lindex $argv 1] }
+	-o { set from [lindex $argv 1] }
+	-r { set to [lindex $argv 1] }
+	-t { set subject [lindex $argv 1] }
+	-b { set message [lindex $argv 1] }
+    }
+
+    lshift argv
+}
+
+if {$should_outval} {
+    puts "server: $server"
+    puts "port: $port"
+    puts "from: $from"
+    puts "to: $to"
+    puts "subject: $subject"
+    puts "message: $message"
+    exit 0
+}
 
 # telnetを起動してSMTPサーバーに接続する
-spawn telnet $smtp_server $smtp_port
+spawn telnet $server $port
 expect "220 *"
 
 # EHLOコマンドを送信する
-send "EHLO $smtp_server\r"
+send "EHLO [info hostname]localdomain\r"
 expect "250 *"
 
 # MAIL FROMコマンドを送信する
