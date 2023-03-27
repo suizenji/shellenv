@@ -91,10 +91,14 @@ expect "250 *"
 
 # SMTP AUTH
 if {[expr {$auth != ""}]} {
-    send "AUTH $auth"
+    send "AUTH $auth\r"
     expect "334 *"
 
-    send [base64en 
+    send "[base64en $user]\r"
+    expect "334 *"
+
+    send "[base64en $pass]\r"
+    expect "235 *"
 }
 
 # MAIL FROMコマンドを送信する
