@@ -10,6 +10,7 @@ set message ""
 set user ""
 set pass ""
 set should_outval 0
+set should_ssl 0
 
 proc lshift {listVar {count 1}} {
     upvar 1 $listVar l
@@ -19,16 +20,17 @@ proc lshift {listVar {count 1}} {
 }
 
 proc show_help {} {
-    puts "post mail with telnet"
+    puts "post mail with telnet."
     puts "options:"
     puts "    -h: show this help"
     puts "    -e: show settings"
     puts "    -s server"
-    puts "    -p port"
+    puts "    -p port(smtp:25 smtps:465 smtp/smtps with auth:567)"
     puts "    -o org(from)"
     puts "    -r recp(to)"
     puts "    -t title(subject)"
     puts "    -b body(message)"
+    puts "    -l: smtps with openssl"
 }
 
 while {[llength $argv] > 0} {
@@ -44,6 +46,7 @@ while {[llength $argv] > 0} {
 	-r { set to [lindex $argv 1] }
 	-t { set subject [lindex $argv 1] }
 	-b { set message [lindex $argv 1] }
+	-l { set should_ssl 1 }
     }
 
     lshift argv
@@ -56,11 +59,16 @@ if {$should_outval} {
     puts "to: $to"
     puts "subject: $subject"
     puts "message: $message"
+    puts "should_ssl: $should_ssl"
     exit 0
 }
 
 # telnetを起動してSMTPサーバーに接続する
-spawn telnet $server $port
+if {$should_ssl} {
+    spawn openssl s_client -connect $server:$port -quiet
+} else {
+    spawn telnet $server $port
+}
 expect "220 *"
 
 # EHLOコマンドを送信する
