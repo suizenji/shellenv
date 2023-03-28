@@ -78,11 +78,18 @@ if {$should_outval} {
 }
 
 # telnetを起動してSMTPサーバーに接続する
+set is_windows [regexp -nocase "windows|mingw" $tcl_platform(os)]
+
 if {$should_ssl} {
     spawn openssl s_client -connect $server:$port -quiet
 } else {
-    spawn telnet $server $port
+    if {$is_windows} {
+	spawn winpty telnet $server $port
+    } else {
+	spawn telnet $server $port
+    }
 }
+
 expect "220 *"
 
 # EHLOコマンドを送信する
