@@ -73,7 +73,7 @@ if {$should_outval} {
     puts "should_ssl: $should_ssl"
     puts "auth: $auth"
     puts "user: $user ([base64en $user])"
-    puts "pass: $pass ([base64en $pass])"
+    puts "pass: **** ([base64en $pass])"
     exit 0
 }
 
