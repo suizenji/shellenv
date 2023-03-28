@@ -1,0 +1,132 @@
+#!/usr/bin/env expect
+
+set server localhost
+set port 25
+#set from $::env(USER)@[info hostname]localdomain
+set from ""
+set to ""
+set subject ""
+set message ""
+set user ""
+set pass ""
+set should_outval 0
+set should_ssl 0
+set auth ""
+
+proc lshift {listVar {count 1}} {
+    upvar 1 $listVar l
+    set r [lrange $l 0 [incr count -1]]
+    set l [lreplace $l [set l 0] $count]
+    return $r
+}
+
+proc base64en {str} {
+    return [binary encode base64 $str]
+}
+
+proc show_help {} {
+    puts "post mail with telnet."
+    puts "options:"
+    puts "    -h: show this help"
+    puts "    -e: show settings"
+    puts "    -s server"
+    puts "    -p port(smtp:25 smtps:465 smtp/smtps with auth:567)"
+    puts "    -o org(from)"
+    puts "    -r recp(to)"
+    puts "    -t title(subject)"
+    puts "    -b body(message)"
+    puts "    -l: smtps with openssl"
+    puts "    -a auth-type"
+    puts "    -u username"
+    puts "    -w password"
+}
+
+while {[llength $argv] > 0} {
+    set arg [lindex $argv 0]
+    set value ""
+
+    switch -- $arg {
+	-h { show_help; exit 0; }
+	-e { set should_outval 1 }
+	-s { set server [lindex $argv 1] }
+	-p { set port [lindex $argv 1] }
+	-o { set from [lindex $argv 1] }
+	-r { set to [lindex $argv 1] }
+	-t { set subject [lindex $argv 1] }
+	-b { set message [lindex $argv 1] }
+	-l { set should_ssl 1 }
+	-a { set auth [lindex $argv 1] }
+	-u { set user [lindex $argv 1] }
+	-w { set pass [lindex $argv 1] }
+    }
+
+    lshift argv
+}
+
+if {$should_outval} {
+    puts "server: $server"
+    puts "port: $port"
+    puts "from: $from"
+    puts "to: $to"
+    puts "subject: $subject"
+    puts "message: $message"
+    puts "should_ssl: $should_ssl"
+    puts "auth: $auth"
+    puts "user: $user ([base64en $user])"
+    puts "pass: $pass ([base64en $pass])"
+    exit 0
+}
+
+# telnetを起動してSMTPサーバーに接続する
+if {$should_ssl} {
+    spawn openssl s_client -connect $server:$port -quiet
+} else {
+    spawn telnet $server $port
+}
+expect "220 *"
+
+# EHLOコマンドを送信する
+send "EHLO [info hostname]localdomain\r"
+expect "250 *"
+
+# SMTP AUTH
+if {[expr {$auth != ""}]} {
+    send "AUTH $auth\r"
+    expect "334 *"
+
+    send "[base64en $user]\r"
+    expect "334 *"
+
+    send "[base64en $pass]\r"
+    expect "235 *"
+}
+
+# MAIL FROMコマンドを送信する
+send "MAIL FROM: <$from>\r"
+expect "250 *"
+
+# RCPT TOコマンドを送信する
+send "RCPT TO: <$to>\r"
+expect "250 *"
+
+# DATAコマンドを送信する
+send "DATA\r"
+expect "354 *"
+
+# メールのヘッダーを送信する
+send "From: $from\r"
+send "To: $to\r"
+send "Subject: $subject\r"
+send "\r\n"
+
+# メールの本文を送信する
+send "$message\r\n"
+send ".\r"
+expect "250 *"
+
+# QUITコマンドを送信して、SMTPセッションを終了する
+send "QUIT\r"
+expect "221 *"
+
+# telnetを終了する
+close

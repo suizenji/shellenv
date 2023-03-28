@@ -1,0 +1,48 @@
+#!/usr/bin/env tclsh
+
+# https://core.tcl-lang.org/tcllib/doc/tcllib-1-18/embedded/www/tcllib/files/modules/cmdline/cmdline.html
+package require cmdline
+
+set options {
+    {s.arg  ""  "server (default: localhost)"}
+    {p.arg  ""  "port (default: 25)"}
+    {t.arg  ""  "title"}
+    {b.arg  ""  "body"}
+    {o.arg  ""  "originator(from) (default: $USER@localdomain)"}
+    {r.arg  ""  "recipients(to) (required)"}
+}
+set usage "\[options] filename ...\noptions:"
+
+try {
+    array set params [::cmdline::getoptions argv $options $usage]
+} trap {CMDLINE USAGE} {msg o} {
+    puts $msg
+    exit 1
+}
+
+if {[expr {$params(r) == ""}]} {
+    puts "set recipients."
+    exit 2
+}
+
+# https://core.tcl-lang.org/tcllib/doc/tcllib-1-19/embedded/www/tcllib/files/modules/mime/smtp.html
+### send mail
+package require smtp
+package require mime
+
+# configure options
+set args [list -recipients $params(r)]
+if {[expr {$params(s) != ""}]} {lappend args -servers $params(s)}
+if {[expr {$params(p) != ""}]} {lappend args -ports $params(p)}
+if {[expr {$params(o) != ""}]} {lappend args -originator $params(o)}
+
+# send
+set token [mime::initialize -canonical text/plain -string $params(b)]
+mime::setheader $token Subject $params(t)
+set result [smtp::sendmessage $token {*}$args]
+mime::finalize $token
+
+if {[expr {$result != ""}]} {
+    puts stderr $result
+    exit 1
+}
