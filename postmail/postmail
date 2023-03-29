@@ -4,15 +4,15 @@
 package require cmdline
 
 set options {
-    {s.arg  ""  "server (default: localhost)"}
-    {p.arg  ""  "port (default: 25) smtps:465 smtp/s: 587"}
-    {t.arg  ""  "title"}
-    {b.arg  ""  "body"}
-    {o.arg  ""  "originator(from) (default: $USER@localdomain)"}
-    {r.arg  ""  "recipients(to) (required)"}
-    {l          "use tls"}
-    {u.arg  ""  "username"}
-    {w.arg  ""  "password"}
+    {s.arg  ""   "server (default: localhost)"}
+    {p.arg  ""   "port (default: 25) smtps:465 smtp/s: 587"}
+    {t.arg  ""   "title"}
+    {b.arg  ""   "body"}
+    {o.arg  ""   "originator(from) (default: $USER@localdomain)"}
+    {r.arg  ""   "recipients(to) (required)"}
+    {l.arg  "0"  "use tls"}
+    {u.arg  ""   "username"}
+    {w.arg  ""   "password"}
 }
 set usage "\[options] filename ...\noptions:"
 
@@ -40,7 +40,7 @@ if {[expr {$params(p) != ""}]} {lappend args -ports $params(p)}
 if {[expr {$params(o) != ""}]} {lappend args -originator $params(o)}
 if {[expr {$params(u) != ""}]} {lappend args -username $params(u)}
 if {[expr {$params(w) != ""}]} {lappend args -password $params(w)}
-if {$params(l)} {lappend args -usetls}
+lappend args -usetls $params(l)
 
 # send
 set token [mime::initialize -canonical text/plain -string $params(b)]
