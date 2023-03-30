@@ -23,7 +23,7 @@ try {
     exit 1
 }
 
-if {[expr {$params(r) == ""}]} {
+if {$params(r) == ""} {
     puts "set recipients."
     exit 2
 }
@@ -35,11 +35,11 @@ package require mime
 
 # configure options
 set args [list -recipients $params(r)]
-if {[expr {$params(s) != ""}]} {lappend args -servers $params(s)}
-if {[expr {$params(p) != ""}]} {lappend args -ports $params(p)}
-if {[expr {$params(o) != ""}]} {lappend args -originator $params(o)}
-if {[expr {$params(u) != ""}]} {lappend args -username $params(u)}
-if {[expr {$params(w) != ""}]} {lappend args -password $params(w)}
+if {$params(s) != ""} {lappend args -servers $params(s)}
+if {$params(p) != ""} {lappend args -ports $params(p)}
+if {$params(o) != ""} {lappend args -originator $params(o)}
+if {$params(u) != ""} {lappend args -username $params(u)}
+if {$params(w) != ""} {lappend args -password $params(w)}
 lappend args -usetls $params(l)
 
 # send

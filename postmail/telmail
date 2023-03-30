@@ -97,7 +97,7 @@ send "EHLO [info hostname]localdomain\r"
 expect "250 *"
 
 # SMTP AUTH
-if {[expr {$auth != ""}]} {
+if {$auth != ""} {
     send "AUTH $auth\r"
     expect "334 *"
 
