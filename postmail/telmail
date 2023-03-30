@@ -11,6 +11,7 @@ set user ""
 set pass ""
 set should_outval 0
 set should_ssl 0
+set starttls 0
 set auth ""
 
 proc lshift {listVar {count 1}} {
@@ -30,13 +31,14 @@ proc show_help {} {
     puts "    -h: show this help"
     puts "    -e: show settings"
     puts "    -s server"
-    puts "    -p port(smtp:25 smtps:465 smtp/smtps with auth:567)"
+    puts "    -p port(smtp:25 smtps:465 smtp/smtps:567)"
     puts "    -o org(from)"
     puts "    -r recp(to)"
     puts "    -t title(subject)"
     puts "    -b body(message)"
     puts "    -l: smtps with openssl"
-    puts "    -a auth-type"
+    puts "    -m: start tls"
+    puts "    -a auth type (LOGIN only)"
     puts "    -u username"
     puts "    -w password"
 }
@@ -55,6 +57,7 @@ while {[llength $argv] > 0} {
 	-t { set subject [lindex $argv 1] }
 	-b { set message [lindex $argv 1] }
 	-l { set should_ssl 1 }
+	-m { set starttls 1 }
 	-a { set auth [lindex $argv 1] }
 	-u { set user [lindex $argv 1] }
 	-w { set pass [lindex $argv 1] }
@@ -71,6 +74,7 @@ if {$should_outval} {
     puts "subject: $subject"
     puts "message: $message"
     puts "should_ssl: $should_ssl"
+    puts "starttls: $starttls"
     puts "auth: $auth"
     puts "user: $user ([base64en $user])"
     puts "pass: **** ([base64en $pass])"
@@ -81,7 +85,11 @@ if {$should_outval} {
 set is_windows [regexp -nocase "windows|mingw" $tcl_platform(os)]
 
 if {$should_ssl} {
-    spawn openssl s_client -connect $server:$port -quiet -crlf
+    if {$starttls} {
+	spawn openssl s_client -connect $server:$port -quiet -crlf -starttls smtp
+    } else {
+	spawn openssl s_client -connect $server:$port -quiet -crlf
+    }
 } else {
     if {$is_windows} {
 	spawn winpty telnet $server $port
