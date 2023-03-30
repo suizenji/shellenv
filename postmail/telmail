@@ -81,7 +81,7 @@ if {$should_outval} {
 set is_windows [regexp -nocase "windows|mingw" $tcl_platform(os)]
 
 if {$should_ssl} {
-    spawn openssl s_client -connect $server:$port -quiet
+    spawn openssl s_client -connect $server:$port -quiet -crlf
 } else {
     if {$is_windows} {
 	spawn winpty telnet $server $port
