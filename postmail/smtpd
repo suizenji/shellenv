@@ -1,0 +1,34 @@
+#!/usr/bin/env tclsh
+
+package require cmdline
+
+set options {
+    {s.arg  "localhost" "server"}
+    {p.arg  "2525"      "port"}
+}
+set usage "\[options] filename ...\noptions:"
+
+try {
+    array set params [::cmdline::getoptions argv $options $usage]
+} trap {CMDLINE USAGE} {msg o} {
+    puts $msg
+    exit 1
+}
+
+set hostname $params(s)
+set port $params(p)
+
+package require smtpd
+
+# メールを受信するためのコールバック関数
+proc del {sender recipients data} {
+    puts $data
+}
+
+# SMTPサーバの起動
+#smtpd::configure -deliver puts
+smtpd::configure -deliver del
+set sock [smtpd::start $hostname $port]
+
+# 無限ループ
+vwait forever
