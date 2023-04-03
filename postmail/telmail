@@ -44,26 +44,24 @@ proc show_help {} {
 }
 
 while {[llength $argv] > 0} {
-    set arg [lindex $argv 0]
-    set value ""
+    set arg [lshift argv]
 
     switch -- $arg {
 	-h { show_help; exit 0; }
 	-e { set should_outval 1 }
-	-s { set server [lindex $argv 1] }
-	-p { set port [lindex $argv 1] }
-	-o { set from [lindex $argv 1] }
-	-r { set to [lindex $argv 1] }
-	-t { set subject [lindex $argv 1] }
-	-b { set message [lindex $argv 1] }
+	-s { set server [lshift argv] }
+	-p { set port [lshift argv] }
+	-o { set from [lshift argv] }
+	-r { set to [lshift argv] }
+	-t { set subject [lshift argv] }
+	-b { set message [lshift argv] }
 	-l { set should_ssl 1 }
 	-m { set starttls 1 }
-	-a { set auth [lindex $argv 1] }
-	-u { set user [lindex $argv 1] }
-	-w { set pass [lindex $argv 1] }
+	-a { set auth [lshift argv] }
+	-u { set user [lshift argv] }
+	-w { set pass [lshift argv] }
+	default { show_help; exit 1; }
     }
-
-    lshift argv
 }
 
 if {$should_outval} {
