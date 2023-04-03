@@ -1,0 +1,3 @@
+# UNCONFIGURED FSTAB FOR BASE SYSTEM
+tmpfs			/dev/shm	tmpfs	defaults		0 0
+/dev/shm		/tmp		tmpfs	defaults,size=8G	0 0

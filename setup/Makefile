@@ -90,7 +90,9 @@ emacs: ~/.emacs.d/init.elc
 /etc/wsl.conf:
 	sudo cp ../conf/wsl.conf $@
 
+# https://minettyo.hatenablog.com/entry/wsl_tmpfs
 wsl-conf: /etc/wsl.conf
+	sudo cp ../conf/fstab /etc/fstab
 
 ~/.tmux.conf:
 	cp ../conf/tmux.conf $@
