@@ -80,6 +80,7 @@ if {$should_outval} {
 }
 
 # telnetを起動してSMTPサーバーに接続する
+set timeout 2
 set is_windows [regexp -nocase "windows|mingw" $tcl_platform(os)]
 
 if {$should_ssl} {
@@ -133,9 +134,10 @@ send "Subject: $subject\r"
 send "\r\n"
 
 # メールの本文を送信する
+set result 1
 send "$message\r\n"
 send ".\r"
-expect "250 *"
+expect "250 *" {set result 0}
 
 # QUITコマンドを送信して、SMTPセッションを終了する
 send "QUIT\r"
@@ -143,3 +145,5 @@ expect "221 *"
 
 # telnetを終了する
 close
+
+exit $result
