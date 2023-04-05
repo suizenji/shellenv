@@ -1,6 +1,6 @@
 #!/usr/bin/env tclsh
 
-# option analize
+### option analize
 package require cmdline
 
 set options {
@@ -19,7 +19,16 @@ try {
     exit 1
 }
 
-# mkdir, touch
+### init
+set filepath "~/.detach/config.json"
+
+if {![file exists $filepath]} {
+    file mkdir [file dirname $filepath]
+    set fp [open $filepath w]
+    puts $fp "\[]"
+    close $fp
+}
+
 # read json file
 # [{org, current}, ..{}]
 
