@@ -29,8 +29,24 @@ if {![file exists $filepath]} {
     close $fp
 }
 
-# read json file
-# [{org, current}, ..{}]
+### read json file [{org, current}, ..{}]
+package require json
+
+set fp [open $filepath r]
+set json_string [read $fp]
+close $fp
+
+set json_dict [json::json2dict $json_string]
+
+# check
+foreach core $json_dict {
+    puts $core
+
+    dict for {key value} $core {
+	puts "Key: $key"
+	puts "Value: $value"
+    }
+}
 
 # detach
 # ls
