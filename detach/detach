@@ -1,124 +1,15 @@
 #!/usr/bin/env tclsh
 
-#TODO
-#licence
-#test
-#refactor
-#extend
+# option analize
+# show help
 
-set config "
-  home [file normalize [file dirname [file readlink $argv0]]]
-  file m.txt
-  format {id name path}
-  sep {%%}
-"
+# mkdir, touch
+# read json file
+# [{org, current}, ..{}]
 
-# TODO template pat
-
-proc Data {} {
-  global config
-  set buf {}
-  foreach key [dict get $config format] {
-    lappend buf $key /dev/null
-  }
-  return $buf
-}
-
-proc serialize {data} {
-  global config
-  set buf {}
-  foreach column [dict get $config format] {
-    lappend buf [dict get $data $column]
-  }
-  return [join $buf [dict get $config sep]]
-}
-
-proc parse {str} {
-  global config
-  return [join [split $str [dict get $config sep]]]
-}
-
-proc unserialize {str} {
-  global config
-  set buf {}
-  foreach key [dict get $config format] value [parse $str] {
-    lappend buf $key $value
-  }
-  return $buf
-}
-
-# TODO delete exec
-proc getid {{length 100}} {
-  return [string range [file extension [exec mktemp]] 1 $length]
-}
-
-proc save {{data {id /dev/null name /dev/null path /dev/null}}} {
-  global config
-  set fd [open [dict get $config home]/[dict get $config file] a+]
-  puts $fd [serialize $data]
-  close $fd
-}
-
-proc fetch {} {
-  global config
-  return [unserialize [exec tail -1 [dict get $config home]/[dict get $config file]]]
-}
-
-proc pop {} {
-  global config
-  set r [exec echo {p
-    d
-    w
-    q
-  } | ed [dict get $config home]/[dict get $config file]]
-  return [unserialize [lindex $r 1]]
-}
-
-proc linfo {} {
-  global config
-  set fd [open [dict get $config home]/[dict get $config file] r]
-  set buf [read $fd]
-  close $fd
-  return $buf
-}
-
-proc usageDesc {} {
-  return {file|command
-command:
-  ls:  list detached files
-  pop: restore detached file}
-}
-
-if {[llength $argv] < 1} {
-    puts "Usage: [lindex [split $argv0 /] end] [usageDesc]"
-  exit 1
-}
-
-switch [lindex $argv 0] {
-  ls {
-    # TODO beautiful output
-    puts [dict get $config format]
-    puts [parse [linfo]]
-  }
-  pop {
-    set data [fetch]
-    set src [dict get $config home]/[dict get $data id]
-    set dist [dict get $data path]
-    file rename -- $src $dist
-    pop
-  }
-  default {
-    foreach src $argv {
-      if {![file exist $src]} {
-        puts stderr "$src is not found."
-        continue
-      }
-
-      set id [getid]
-      set dist [file normalize "[dict get $config home]/${id}"]
-      file rename -- $src $dist
-      save [list id $id name [file tail $src] path [file normalize $src]]
-    }
-  }
-}
-
+# detach
+# ls
+# pop <id>
+# pop-all
+# clear <id>
+# clear-all
