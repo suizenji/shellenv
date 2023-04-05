@@ -1,7 +1,23 @@
 #!/usr/bin/env tclsh
 
 # option analize
-# show help
+package require cmdline
+
+set options {
+    {l          "list files"}
+    {p.arg  ""  "pop a file"}
+    {P          "pop all files"}
+    {c.arg  ""  "clear a file"}
+    {C          "clear all files"}
+}
+set usage "\[options] filename ...\noptions:"
+
+try {
+    array set params [::cmdline::getoptions argv $options $usage]
+} trap {CMDLINE USAGE} {msg o} {
+    puts $msg
+    exit 1
+}
 
 # mkdir, touch
 # read json file
