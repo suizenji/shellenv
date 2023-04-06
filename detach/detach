@@ -40,8 +40,12 @@ set json_dict [json::json2dict $json_string]
 
 # check
 foreach core $json_dict {
-    puts $core
+    if {$params(l)} {
+	puts "[dict get $core id]\t[dict get $core org]"
+	continue
+    }
 
+    puts $core
     dict for {key value} $core {
 	puts "Key: $key"
 	puts "Value: $value"
@@ -49,7 +53,6 @@ foreach core $json_dict {
 }
 
 # detach
-# ls
 # pop <id>
 # pop-all
 # clear <id>
