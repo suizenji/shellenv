@@ -83,11 +83,17 @@ set json_dict [json::json2dict $json_string]
 
 ### detach
 if {$subcom == "detach"} {
-    puts detach
+    # get last id
+
+    foreach file $argv {
+	# file move
+	# lappend config {id, file}
+    }
+
+    # write file
+
+    exit
 }
-
-exit
-
 
 # check
 proc ls {params core} {
