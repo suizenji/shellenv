@@ -62,10 +62,6 @@ try {
     exit 1
 }
 
-
-exit
-
-
 ### init
 set filepath "~/.detach/config.json"
 
@@ -85,8 +81,29 @@ close $fp
 
 set json_dict [json::json2dict $json_string]
 
+### detach
+if {$subcom == "detach"} {
+    puts detach
+}
+
+exit
+
+
 # check
+proc ls {params core} {
+    upvar $params p $core c
+    global filepath json_dict
+    puts $p(l)
+    puts $c
+    puts $filepath
+    set json_dict {}
+}
+
 foreach core $json_dict {
+ls params core
+
+continue
+
     if {$params(l)} {
 	puts "[dict get $core id]\t[dict get $core org]"
 	continue
@@ -99,6 +116,7 @@ foreach core $json_dict {
     }
 }
 
+# ls
 # detach
 # pop <id>
 # pop-all
