@@ -4,7 +4,7 @@ package require cmdline
 
 ### opts analyze
 # parent analyze
-set subcoms {ls detach pop clear help}
+set subcoms {ls detach pop clear help -h}
 
 if {[lsearch $subcoms [lindex $argv 0]] >= 0} {
     set subcom [lindex $argv 0]
@@ -14,7 +14,7 @@ if {[lsearch $subcoms [lindex $argv 0]] >= 0} {
 }
 
 # show help and exit
-if {$subcom == "help"} {
+if {$subcom == "help" || $subcom == "-h"} {
     puts stderr "Usage: $argv0 \[subcom]
 subcommands:
 	ls:		list detached files
@@ -58,7 +58,7 @@ set usage [dict get [dict get $opts_list $subcom] usage]
 try {
     array set params [::cmdline::getoptions argv $opts $usage]
 } trap {CMDLINE USAGE} {msg o} {
-    puts "$msg"
+    puts stderr "$msg"
     exit 1
 }
 
