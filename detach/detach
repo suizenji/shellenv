@@ -17,8 +17,17 @@ if {[lsearch $subcoms [lindex $argv 0]] >= 0} {
     set subcom detach
 }
 
-puts $subcom
-puts $argv
+if {$subcom == "help"} {
+    puts stderr "Usage: $argv0 \[subcom]
+subcommands:
+	ls:		list detached files
+	detach:		detach files (default)
+	pop:		pop detached files
+	clear:		clear detached files
+	help:		show this help"
+
+    exit 1
+}
 
 exit
 
