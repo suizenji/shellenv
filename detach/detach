@@ -1,6 +1,31 @@
 #!/usr/bin/env tclsh
 
 ### option analize
+# ls
+# detach
+# pop <id>
+# pop-all
+# clear <id>
+# clear-all
+# help
+set subcoms {ls detach pop clear help}
+
+if {[lsearch $subcoms [lindex $argv 0]] >= 0} {
+    set subcom [lindex $argv 0]
+    set argv [lrange $argv 1 end]
+} else {
+    set subcom detach
+}
+
+puts $subcom
+puts $argv
+
+exit
+
+
+
+
+
 package require cmdline
 
 set options {
