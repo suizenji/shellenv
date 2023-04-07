@@ -1,13 +1,8 @@
 #!/usr/bin/env tclsh
 
-### option analize
-# ls
-# detach
-# pop <id>
-# pop-all
-# clear <id>
-# clear-all
-# help
+package require cmdline
+
+### subcom analize
 set subcoms {ls detach pop clear help}
 
 if {[lsearch $subcoms [lindex $argv 0]] >= 0} {
@@ -31,11 +26,6 @@ subcommands:
 
 exit
 
-
-
-
-
-package require cmdline
 
 set options {
     {l          "list files"}
