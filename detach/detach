@@ -2,7 +2,8 @@
 
 package require cmdline
 
-### subcom analize
+### opts analyze
+# parent analyze
 set subcoms {ls detach pop clear help}
 
 if {[lsearch $subcoms [lindex $argv 0]] >= 0} {
@@ -12,6 +13,7 @@ if {[lsearch $subcoms [lindex $argv 0]] >= 0} {
     set subcom detach
 }
 
+# show help and exit
 if {$subcom == "help"} {
     puts stderr "Usage: $argv0 \[subcom]
 subcommands:
@@ -24,24 +26,45 @@ subcommands:
     exit 1
 }
 
-exit
-
-
-set options {
-    {l          "list files"}
-    {p.arg  ""  "pop a file"}
-    {P          "pop all files"}
-    {c.arg  ""  "clear a file"}
-    {C          "clear all files"}
+# child analyze
+set opts_list {
+    ls {
+	usage "ls [opts] file.."
+	opts {
+	    {l "show details"}
+	}
+    }
+    detach {
+	usage "[detach] file.."
+	opts {}
+    }
+    pop {
+	usage "pop [opts] file.."
+	opts {
+	    {a "pop all files"}
+	}
+    }
+    clear {
+	usage "clear [opts] file.."
+	opts {
+	    {a "clear all files"}
+	}
+    }
 }
-set usage "\[options] filename ...\noptions:"
+
+set opts [dict get [dict get $opts_list $subcom] opts]
+set usage [dict get [dict get $opts_list $subcom] usage]
 
 try {
-    array set params [::cmdline::getoptions argv $options $usage]
+    array set params [::cmdline::getoptions argv $opts $usage]
 } trap {CMDLINE USAGE} {msg o} {
-    puts $msg
+    puts "$msg"
     exit 1
 }
+
+
+exit
+
 
 ### init
 set filepath "~/.detach/config.json"
