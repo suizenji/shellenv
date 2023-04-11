@@ -84,6 +84,7 @@ set json_dict [json::json2dict $json_string]
 ### detach
 if {$subcom == "detach"} {
     # get last id
+    set id_end [dict get [lindex $json_dict end] id]
 
     foreach file $argv {
 	# file move
