@@ -63,7 +63,8 @@ try {
 }
 
 ### init
-set filepath "~/.detach/config.json"
+set basepath "~/.detach"
+set filepath "${basepath}/config.json"
 
 if {![file exists $filepath]} {
     file mkdir [file dirname $filepath]
@@ -75,10 +76,8 @@ if {![file exists $filepath]} {
 ### read json file [{org, current}, ..{}]
 package require json
 
-set fp [open $filepath r]
+set fp [open $filepath r+]
 set json_string [read $fp]
-close $fp
-
 set json_dict [json::json2dict $json_string]
 
 ### detach
@@ -87,11 +86,17 @@ if {$subcom == "detach"} {
     set id_end [dict get [lindex $json_dict end] id]
 
     foreach file $argv {
-	# file move
-	# lappend config {id, file}
-    }
+	set id_end [expr $id_end + 1]
 
+	# file move
+#	catch {file rename $file "${basepath}/${id_end}"}
+
+	# lappend config {id, file}
+	lappend json_dict [list id $id_end org $file]
+    }
+puts $json_dict
     # write file
+    puts $fp $json_dict
 
     exit
 }
