@@ -89,14 +89,16 @@ if {$subcom == "detach"} {
 	set id_end [expr $id_end + 1]
 
 	# file move
-#	catch {file rename $file "${basepath}/${id_end}"}
+	if {[catch {file rename $file "${basepath}/${id_end}"} err]} {
+	    puts $err
+	}
 
 	# lappend config {id, file}
 	lappend json_dict [list id $id_end org $file]
     }
 puts $json_dict
     # write file
-    puts $fp $json_dict
+#    puts $fp $json_dict
 
     exit
 }
