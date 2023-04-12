@@ -74,12 +74,12 @@ if {![file exists $filepath]} {
 }
 
 ### read json file [{org, current}, ..{}]
-package require json
-
+#package require json
 set fp [open $filepath r]
-set json_string [read $fp]
-close $fp
-set json_dict [json::json2dict $json_string]
+#set json_string [read $fp]
+#set json_dict [json::json2dict $json_string]
+set json_dict [read $fp]
+#close $fp
 
 ### detach
 if {$subcom == "detach"} {
