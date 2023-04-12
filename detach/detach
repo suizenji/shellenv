@@ -64,12 +64,13 @@ try {
 
 ### init
 set basepath "~/.detach"
-set filepath "${basepath}/config.json"
+#set filepath "${basepath}/config.json"
+set filepath "${basepath}/config.list"
 
 if {![file exists $filepath]} {
     file mkdir [file dirname $filepath]
     set fp [open $filepath w]
-    puts $fp "\[]"
+#    puts $fp "\[]"
     close $fp
 }
 
@@ -79,7 +80,7 @@ set fp [open $filepath r]
 #set json_string [read $fp]
 #set json_dict [json::json2dict $json_string]
 set json_dict [read $fp]
-#close $fp
+close $fp
 
 ### detach
 if {$subcom == "detach"} {
