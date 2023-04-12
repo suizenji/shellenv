@@ -77,15 +77,15 @@ if {![file exists $filepath]} {
 ### read json file [{org, current}, ..{}]
 #package require json
 set fp [open $filepath r]
-#set json_string [read $fp]
-#set json_dict [json::json2dict $json_string]
-set json_dict [read $fp]
+#set config_string [read $fp]
+#set config_dict [json::json2dict $config_string]
+set config_dict [read $fp]
 close $fp
 
 ### detach
 if {$subcom == "detach"} {
     # get last id
-    set id_end [dict get [lindex $json_dict end] id]
+    set id_end [dict get [lindex $config_dict end] id]
 
     foreach file $argv {
 	set id_end [expr $id_end + 1]
@@ -97,12 +97,12 @@ if {$subcom == "detach"} {
 	}
 
 	# lappend config {id, file}
-	lappend json_dict [list id $id_end org $file]
+	lappend config_dict [list id $id_end org $file]
     }
 
     # update
     set fp [open $filepath w]
-    puts $fp $json_dict
+    puts $fp $config_dict
     close $fp
 
     exit
@@ -111,14 +111,14 @@ if {$subcom == "detach"} {
 # check
 proc ls {params core} {
     upvar $params p $core c
-    global filepath json_dict
+    global filepath config_dict
     puts $p(l)
     puts $c
     puts $filepath
-    set json_dict {}
+    set config_dict {}
 }
 
-foreach core $json_dict {
+foreach core $config_dict {
 ls params core
 
 continue
