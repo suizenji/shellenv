@@ -85,7 +85,9 @@ close $fp
 ### detach
 if {$subcom == "detach"} {
     # get last id
-    set id_end [dict get [lindex $config_dict end] id]
+    if {[catch {set id_end [dict get [lindex $config_dict end] id]}]} {
+	set id_end 0
+    }
 
     foreach file $argv {
 	set id_end [expr $id_end + 1]
