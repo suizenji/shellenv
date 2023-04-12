@@ -104,7 +104,7 @@ if {$subcom == "detach"} {
 
     # update
     set fp [open $filepath w]
-    puts $fp $config_dict
+    puts -nonewline $fp $config_dict
     close $fp
 
     exit
