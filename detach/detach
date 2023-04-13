@@ -64,21 +64,15 @@ try {
 
 ### init
 set basepath "~/.detach"
-#set filepath "${basepath}/config.json"
 set filepath "${basepath}/config.list"
 
 if {![file exists $filepath]} {
     file mkdir [file dirname $filepath]
-    set fp [open $filepath w]
-#    puts $fp "\[]"
-    close $fp
+    set fp [open $filepath w+]
+} else {
+    set fp [open $filepath r]
 }
 
-### read json file [{org, current}, ..{}]
-#package require json
-set fp [open $filepath r]
-#set config_string [read $fp]
-#set config_dict [json::json2dict $config_string]
 set config_dict [read $fp]
 close $fp
 
