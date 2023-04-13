@@ -113,6 +113,11 @@ foreach config $config_dict {
             puts "[dict get $config id] [dict get $config org]"
             # TODO -l option
 	}
+	pop {
+	    puts "TODO file move"
+	    set detached_file "${basepath}/[dict get $config id]"
+	    puts "TODO config update"
+	}
     }
 }
 
