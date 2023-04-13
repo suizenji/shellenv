@@ -93,7 +93,7 @@ if {$subcom == "detach"} {
 	}
 
 	# lappend config {id, file}
-	lappend config_dict [list id $id_end org $file]
+	lappend config_dict [list id $id_end org [file normalize $file]]
     }
 
     # update
