@@ -106,30 +106,16 @@ if {$subcom == "detach"} {
     exit
 }
 
-# check
-proc ls {params core} {
-    upvar $params p $core c
+# subcom
+proc ls {params config} {
+    upvar $params p $config c
     global filepath config_dict
-    puts $p(l)
-    puts $c
-    puts $filepath
-    set config_dict {}
+    puts "[dict get $c id] [dict get $c org]"
 }
 
-foreach core $config_dict {
-ls params core
-
-continue
-
-    if {$params(l)} {
-	puts "[dict get $core id]\t[dict get $core org]"
-	continue
-    }
-
-    puts $core
-    dict for {key value} $core {
-	puts "Key: $key"
-	puts "Value: $value"
+foreach config $config_dict {
+    switch -- $subcom {
+	ls { ls params config }
     }
 }
 
