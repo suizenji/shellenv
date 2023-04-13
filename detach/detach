@@ -107,19 +107,15 @@ if {$subcom == "detach"} {
 }
 
 # subcom
-proc ls {params config} {
-    upvar $params p $config c
-    global filepath config_dict
-    puts "[dict get $c id] [dict get $c org]"
-}
-
 foreach config $config_dict {
     switch -- $subcom {
-	ls { ls params config }
+        ls {
+            puts "[dict get $config id] [dict get $config org]"
+            # TODO -l option
+	}
     }
 }
 
-# ls
 # detach
 # pop <id>
 # pop-all
