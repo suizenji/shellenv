@@ -98,7 +98,9 @@ if {$subcom == "detach"} {
 
     # update
     set fp [open $filepath w]
-    puts -nonewline $fp $config_dict
+    foreach config $config_dict {
+        puts $fp [list $config]
+    }
     close $fp
 
     exit
