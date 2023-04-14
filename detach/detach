@@ -127,11 +127,19 @@ proc find_config {&config_list id} {
 
 if {$subcom == "pop"} {
     foreach id $argv {
-	set from "${basepath}/${id}"
-	puts $from
+	set config_info [find_config config_list $id]
+	if {$config_info == ""} {
+	    puts stderr "ID $id is not found."
+	    continue
+	}
 
-	set config [find_config config_list $id]
-	puts $config
+	set config [dict get $config_info config]
+
+	set from "${basepath}/${id}"
+	set to [dict get $config org]
+
+	puts $from
+	puts $to
     }
 
     exit
