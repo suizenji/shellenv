@@ -114,8 +114,13 @@ foreach config $config_list {
             # TODO -l option
 	}
 	pop {
-	    puts "TODO file move"
-	    set detached_file "${basepath}/[dict get $config id]"
+            set from "${basepath}/[dict get $config id]"
+	    set to [dict get $config org]
+	    if {[catch {[file rename $from $to err]}]} {
+		puts $err
+		continue
+	    }
+
 	    puts "TODO config update"
 	}
     }
