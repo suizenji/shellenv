@@ -114,11 +114,23 @@ if {$subcom == "ls"} {
     exit
 }
 
+proc find_config {&config_list id} {
+    upvar ${&config_list} config_list
+
+# TODO index
+    foreach key config $config_list {
+	if {$id != [dict get $config id]} continue;
+	return $config
+    }
+}
+
 if {$subcom == "pop"} {
     foreach id $argv {
 	set from "${basepath}/${id}"
 	puts $from
-#	set to [dict get $config org]
+
+	set config [find_config config_list $id]
+	puts $config
     }
 
     exit
