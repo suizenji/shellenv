@@ -77,6 +77,16 @@ set config_list [read $fp]
 close $fp
 
 ### subcom
+proc update_config {config_list} {
+    global filepath
+
+    set fp [open $filepath w]
+    foreach config $config_list {
+        puts $fp [list $config]
+    }
+    close $fp
+}
+
 if {$subcom == "detach"} {
     # get last id
     if {[catch {set id_end [dict get [lindex $config_list end] id]}]} {
@@ -88,7 +98,7 @@ if {$subcom == "detach"} {
 
 	# file move
 	if {[catch {file rename $file "${basepath}/${id_end}"} err]} {
-	    puts $err
+	    puts stderr $err
 	    continue
 	}
 
@@ -96,12 +106,7 @@ if {$subcom == "detach"} {
 	lappend config_list [list id $id_end org [file normalize $file]]
     }
 
-    # update
-    set fp [open $filepath w]
-    foreach config $config_list {
-        puts $fp [list $config]
-    }
-    close $fp
+    update_config $config_list
 
     exit
 }
@@ -148,11 +153,7 @@ if {$subcom == "pop"} {
 	set config_list [lreplace $config_list $delid $delid]
     }
 
-    set fp [open $filepath w]
-    foreach config $config_list {
-        puts $fp [list $config]
-    }
-    close $fp
+    update_config $config_list
 
     exit
 }
