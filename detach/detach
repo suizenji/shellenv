@@ -117,10 +117,11 @@ if {$subcom == "ls"} {
 proc find_config {&config_list id} {
     upvar ${&config_list} config_list
 
-# TODO index
-    foreach key config $config_list {
+    set i -1
+    foreach config $config_list {
+	incr i
 	if {$id != [dict get $config id]} continue;
-	return $config
+	return [list index $i config $config]
     }
 }
 
