@@ -134,7 +134,6 @@ if {$subcom == "pop"} {
 	}
 
 	set config [dict get $config_info config]
-
 	set from "${basepath}/${id}"
 	set to [dict get $config org]
 
@@ -142,6 +141,10 @@ if {$subcom == "pop"} {
 	    puts stderr $err
 	    continue
 	}
+
+	# update
+	set delid [dict get $config_info index]
+	set config_list [lreplace $config_list $delid $delid]
     }
 
     exit
