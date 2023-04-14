@@ -137,7 +137,7 @@ if {$subcom == "pop"} {
 	set from "${basepath}/${id}"
 	set to [dict get $config org]
 
-	if {[catch {[file rename $from $to err]}]} {
+	if {[catch {[file rename $from $to]} err]} {
 	    puts stderr $err
 	    continue
 	}
@@ -146,6 +146,12 @@ if {$subcom == "pop"} {
 	set delid [dict get $config_info index]
 	set config_list [lreplace $config_list $delid $delid]
     }
+
+    set fp [open $filepath w]
+    foreach config $config_list {
+        puts $fp [list $config]
+    }
+    close $fp
 
     exit
 }
