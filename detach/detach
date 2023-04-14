@@ -106,11 +106,19 @@ if {$subcom == "detach"} {
     exit
 }
 
+if {$subcom == "ls"} {
+    foreach config $config_list {
+	puts "[dict get $config id] [dict get $config org]"
+    }
+
+    exit
+}
+
+exit
 # subcom
 foreach config $config_list {
     switch -- $subcom {
         ls {
-            puts "[dict get $config id] [dict get $config org]"
             # TODO -l option
 	}
 	pop {
