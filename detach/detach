@@ -138,8 +138,10 @@ if {$subcom == "pop"} {
 	set from "${basepath}/${id}"
 	set to [dict get $config org]
 
-	puts $from
-	puts $to
+	if {[catch {[file rename $from $to err]}]} {
+	    puts stderr $err
+	    continue
+	}
     }
 
     exit
