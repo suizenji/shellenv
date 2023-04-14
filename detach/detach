@@ -73,13 +73,13 @@ if {![file exists $filepath]} {
     set fp [open $filepath r]
 }
 
-set config_dict [read $fp]
+set config_list [read $fp]
 close $fp
 
 ### detach
 if {$subcom == "detach"} {
     # get last id
-    if {[catch {set id_end [dict get [lindex $config_dict end] id]}]} {
+    if {[catch {set id_end [dict get [lindex $config_list end] id]}]} {
 	set id_end 0
     }
 
@@ -93,12 +93,12 @@ if {$subcom == "detach"} {
 	}
 
 	# lappend config {id, file}
-	lappend config_dict [list id $id_end org [file normalize $file]]
+	lappend config_list [list id $id_end org [file normalize $file]]
     }
 
     # update
     set fp [open $filepath w]
-    foreach config $config_dict {
+    foreach config $config_list {
         puts $fp [list $config]
     }
     close $fp
@@ -107,7 +107,7 @@ if {$subcom == "detach"} {
 }
 
 # subcom
-foreach config $config_dict {
+foreach config $config_list {
     switch -- $subcom {
         ls {
             puts "[dict get $config id] [dict get $config org]"
