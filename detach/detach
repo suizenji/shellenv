@@ -158,8 +158,6 @@ if {$subcom == "pop"} {
     exit
 }
 
-
-# pop <id>
 # pop-all
 # clear <id>
 # clear-all
