@@ -76,7 +76,7 @@ if {![file exists $filepath]} {
 set config_list [read $fp]
 close $fp
 
-### detach
+### subcom
 if {$subcom == "detach"} {
     # get last id
     if {[catch {set id_end [dict get [lindex $config_list end] id]}]} {
@@ -114,27 +114,17 @@ if {$subcom == "ls"} {
     exit
 }
 
-exit
-# subcom
-foreach config $config_list {
-    switch -- $subcom {
-        ls {
-            # TODO -l option
-	}
-	pop {
-            set from "${basepath}/[dict get $config id]"
-	    set to [dict get $config org]
-	    if {[catch {[file rename $from $to err]}]} {
-		puts $err
-		continue
-	    }
-
-	    puts "TODO config update"
-	}
+if {$subcom == "pop"} {
+    foreach id $argv {
+	set from "${basepath}/${id}"
+	puts $from
+#	set to [dict get $config org]
     }
+
+    exit
 }
 
-# detach
+
 # pop <id>
 # pop-all
 # clear <id>
