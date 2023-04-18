@@ -39,7 +39,7 @@ set opts_list {
 	opts {}
     }
     pop {
-	usage "pop [opts] file.."
+	usage "pop [opts] [file..]"
 	opts {
 	    {a "pop all files"}
 	}
@@ -131,7 +131,13 @@ proc find_config {&config_list id} {
 }
 
 if {$subcom == "pop"} {
-    foreach id $argv {
+    if {[llength $argv] < 1} {
+	set id_list [dict get [lindex $config_list 0] id]
+    } else {
+	set id_list $argv
+    }
+
+    foreach id $id_list {
 	set config_info [find_config config_list $id]
 	if {$config_info == ""} {
 	    puts stderr "ID $id is not found."
