@@ -156,9 +156,11 @@ if {$subcom == "pop"} {
 	set to [dict get $config org]
 
 	if {[catch {[file rename $from $to]} err]} {
-# FIXME: what is 'invalid command name ""'?
-#	    puts stderr $err
-#	    continue
+	    # FIXME: what is 'invalid command name ""'?
+	    if {$err != "invalid command name \"\""} {
+		puts stderr $err
+		continue
+	    }
 	}
 
 	# update
