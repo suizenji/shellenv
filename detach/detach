@@ -173,5 +173,37 @@ if {$subcom == "pop"} {
     exit
 }
 
-# clear <id>
-# clear-all
+if {$subcom == "clear"} {
+    if {$params(a)} {
+	set id_list [lmap config $config_list {dict get $config id}]
+    } else {
+	set id_list $argv
+    }
+
+    foreach id $id_list {
+	set config_info [find_config config_list $id]
+	if {$config_info == ""} {
+	    puts stderr "ID $id is not found."
+	    continue
+	}
+
+	set config [dict get $config_info config]
+	set file "${basepath}/${id}"
+
+	if {[catch {[file delete $file]} err]} {
+	    # FIXME: what is 'invalid command name ""'?
+	    if {$err != "invalid command name \"\""} {
+		puts stderr $err
+		continue
+	    }
+	}
+
+	# update
+	set delid [dict get $config_info index]
+	set config_list [lreplace $config_list $delid $delid]
+    }
+
+    update_config $config_list
+
+    exit
+}
