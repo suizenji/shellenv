@@ -131,8 +131,15 @@ proc find_config {&config_list id} {
 }
 
 if {$subcom == "pop"} {
-    if {[llength $argv] < 1} {
-	set id_list [dict get [lindex $config_list 0] id]
+    if {[llength $config_list] < 1} {
+	puts stderr "detached data is not exists."
+	exit 1
+    }
+
+    if {$params(a)} {
+	set id_list foo
+    } elseif {[llength $argv] < 1} {
+	set id_list [dict get [lindex $config_list end] id]
     } else {
 	set id_list $argv
     }
