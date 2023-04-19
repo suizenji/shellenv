@@ -109,8 +109,6 @@ proc detach {} {
     }
 
     update_config $config_list
-
-    exit
 }
 
 proc find_config {&config_list id} {
@@ -165,8 +163,6 @@ proc pop {} {
     }
 
     update_config $config_list
-
-    exit
 }
 
 proc clear {} {
@@ -202,8 +198,6 @@ proc clear {} {
     }
 
     update_config $config_list
-
-    exit
 }
 
 ### run
@@ -213,8 +207,6 @@ switch $subcom {
 	foreach config $config_list {
 	    puts "[dict get $config id] [dict get $config org]"
 	}
-
-	exit
     }
     pop pop
     clear clear
