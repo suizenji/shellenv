@@ -170,6 +170,8 @@ proc clear {} {
 
     if {$params(a)} {
 	set id_list [lmap config $config_list {dict get $config id}]
+    } elseif {[llength $argv] < 1} {
+	set id_list [dict get [lindex $config_list end] id]
     } else {
 	set id_list $argv
     }
