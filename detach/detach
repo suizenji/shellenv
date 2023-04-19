@@ -87,7 +87,9 @@ proc update_config {config_list} {
     close $fp
 }
 
-if {$subcom == "detach"} {
+proc detach {} {
+    global argv basepath config_list
+
     # get last id
     if {[catch {set id_end [dict get [lindex $config_list end] id]}]} {
 	set id_end 0
@@ -111,6 +113,10 @@ if {$subcom == "detach"} {
     exit
 }
 
+if {$subcom == "detach"} {
+    detach
+}
+
 if {$subcom == "ls"} {
     foreach config $config_list {
 	puts "[dict get $config id] [dict get $config org]"
@@ -130,7 +136,9 @@ proc find_config {&config_list id} {
     }
 }
 
-if {$subcom == "pop"} {
+proc pop {} {
+    global argv basepath config_list params
+
     if {[llength $config_list] < 1} {
 	puts stderr "detached data is not exists."
 	exit 1
@@ -173,7 +181,13 @@ if {$subcom == "pop"} {
     exit
 }
 
-if {$subcom == "clear"} {
+if {$subcom == "pop"} {
+    pop
+}
+
+proc clear {} {
+    global argv basepath config_list params
+
     if {$params(a)} {
 	set id_list [lmap config $config_list {dict get $config id}]
     } else {
@@ -206,4 +220,8 @@ if {$subcom == "clear"} {
     update_config $config_list
 
     exit
+}
+
+if {$subcom == "clear"} {
+    clear
 }
