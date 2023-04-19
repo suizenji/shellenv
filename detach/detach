@@ -113,18 +113,6 @@ proc detach {} {
     exit
 }
 
-if {$subcom == "detach"} {
-    detach
-}
-
-if {$subcom == "ls"} {
-    foreach config $config_list {
-	puts "[dict get $config id] [dict get $config org]"
-    }
-
-    exit
-}
-
 proc find_config {&config_list id} {
     upvar ${&config_list} config_list
 
@@ -181,10 +169,6 @@ proc pop {} {
     exit
 }
 
-if {$subcom == "pop"} {
-    pop
-}
-
 proc clear {} {
     global argv basepath config_list params
 
@@ -222,6 +206,16 @@ proc clear {} {
     exit
 }
 
-if {$subcom == "clear"} {
-    clear
+### run
+switch $subcom {
+    detach detach
+    ls {
+	foreach config $config_list {
+	    puts "[dict get $config id] [dict get $config org]"
+	}
+
+	exit
+    }
+    pop pop
+    clear clear
 }
