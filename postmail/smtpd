@@ -4,7 +4,7 @@ package require cmdline
 
 set options {
     {s.arg  "localhost" "server"}
-    {p.arg  "2525"      "port"}
+    {p.arg  "25"      "port"}
 }
 set usage "\[options] filename ...\noptions:"
 
