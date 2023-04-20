@@ -1,5 +1,7 @@
-install:
-	echo TODO
+install: ../bin/detach
+
+../bin/detach: detach
+	cp $< $@
 
 test:
 	touch file1 file2
