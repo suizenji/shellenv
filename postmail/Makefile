@@ -7,5 +7,8 @@ install: ../bin/postmail ../bin/telmail ../bin/smtpd
 ../bin/smtpd: smtpd
 	cp $< $@
 
-# TODO
-#test:
+test:
+# pass
+
+clean:
+# pass

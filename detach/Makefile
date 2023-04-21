@@ -15,4 +15,7 @@ test:
 	! ./detach ls | grep '/detach/file1'
 
 clean:
-	rm -rf ~/.detach file1 file2
+	rm -rf file1 file2
+
+uninstall: clean
+	rm -rf ~/.detach
