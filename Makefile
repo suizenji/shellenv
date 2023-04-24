@@ -1,6 +1,9 @@
 install:
 	make install -C detach
 	make install -C postmail
+	@echo ''
+	@echo '>>> next'
+	@echo export PATH=\"\$$PATH:$(shell pwd)/bin\"
 
 uninstall:
 	rm ./bin/*
