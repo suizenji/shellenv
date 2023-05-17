@@ -48,7 +48,9 @@ podman-compose: ~/.local/bin/podman-compose
 	@echo export PATH=\"\$$PATH:~/.local/bin\"
 
 mingw:
-	pacman -S --noconfirm emacs tmux mingw64/mingw-w64-x86_64-ag socat tree global clang64/mingw-w64-clang-x86_64-nodejs bc rlwrap expect mingw64/mingw-w64-x86_64-tcllib
+	pacman -S --noconfirm emacs tmux mingw64/mingw-w64-x86_64-ag socat tree global bc rlwrap wget
+	pacman -S --noconfirm clang64/mingw-w64-clang-x86_64-nodejs
+	pacman -S --noconfirm expect mingw64/mingw-w64-x86_64-tcllib
 	pacman -S --noconfirm mingw64/mingw-w64-x86_64-podman mingw64/mingw-w64-x86_64-podman-compose
 
 define winget-install
@@ -87,25 +89,28 @@ snap:
 
 emacs: ~/.emacs.d/init.elc
 
-/etc/wsl.conf:
-	sudo cp ../conf/wsl.conf $@
+/etc/wsl.conf: ../conf/wsl.conf
+	sudo cp $< $@
 
 # https://minettyo.hatenablog.com/entry/wsl_tmpfs
 wsl-conf: /etc/wsl.conf
 	sudo cp ../conf/fstab /etc/fstab
 
-~/.tmux.conf:
-	cp ../conf/tmux.conf $@
+~/.tmux.conf: ../conf/tmux.conf
+	cp $< $@
 
 ~/.gdbinit:
 	wget -P ~ https://git.io/.gdbinit
 
-conf: ~/.tmux.conf ~/.gdbinit
+~/.globalrc: ../conf/globalrc
+	cp $< $@
+
+conf: ~/.tmux.conf ~/.gdbinit ~/.globalrc
 
 clean-emacs:
 	rm -rf ~/.emacs.d
 
 clean-conf:
-	rm -rf ~/.tmux.conf ~/.gdbinit
+	rm -rf ~/.tmux.conf ~/.gdbinit ~/.globalrc
 
 clean-all: clean-conf clean-emacs
