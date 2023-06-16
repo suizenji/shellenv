@@ -1,6 +1,7 @@
 export PATH="${PATH}:/clang64/bin"
 export PATH="${PATH}:/mingw64/bin"
 export PATH="/c/Program Files/RedHat/Podman:${PATH}"
+export PATH="${PATH}:/C/HashiCorp/Vagrant/bin"
 
 export NODE_SKIP_PLATFORM_CHECK=1
 export TCLLIBPATH=" . /mingw64/lib/tcllib1.21"

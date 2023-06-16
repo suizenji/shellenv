@@ -38,7 +38,7 @@ apt-up:
 
 apt:
 	sudo apt install -y emacs-nox tmux silversearcher-ag socat tree global sqlite3 gdb unzip bc rlwrap expect tcllib tcl-tls
-	sudo apt install -y podman qemu-system python3-pip
+	sudo apt install -y podman qemu-system python3-pip vagrant virtualbox
 	make podman-compose
 
 podman-compose: ~/.local/bin/podman-compose
@@ -61,6 +61,8 @@ endef
 winget:
 	$(call winget-install, podman)
 	$(call winget-install, gsudo)
+	$(call winget-install, vagrant)
+	$(call winget-install, virtualbox)
 
 mingw-conf: mingw-profile mingw-hosts
 
