@@ -29,22 +29,29 @@ BI_ADDR2 := system:cat
 # CA or SRV
 EXT_TYPE =
 
+# command name
+ifeq ($(MAKEFILE_LIST),Makefile)
+CMD := make
+else
+CMD := $(shell basename $(MAKEFILE_LIST))
+endif
+
 .PRECIOUS: %.key %.csr
 
 # show usage.
 usage:
 	@echo 'usage:'
-	@echo '	make [target|VAR=VAL, ..]'
+	@echo '	$(CMD) [target|VAR=VAL, ..]'
 	@echo ''
 	@echo 'examples:'
-	@echo '	make ore.crt'
-	@echo '	make ore.crt CSR_SUB=/C=JP'
-	@echo '	make clean ore.crt CSR_SUB=/C=JP'
-	@echo '	make ore.server SRV_PORT=8443 BI_ADDR2="system:./response.sh"'
-	@echo '	make ca.ext EXT_TYPE=CA ca.crt ca.show-crt'
-	@echo '	make root.crt && make child.crt CA=root CRT_CHAIN=1'
-	@echo '	make help'
-	@echo '	make link'
+	@echo '	$(CMD) ore.crt'
+	@echo '	$(CMD) ore.crt CSR_SUB=/C=JP'
+	@echo '	$(CMD) clean ore.crt CSR_SUB=/C=JP'
+	@echo '	$(CMD) ore.server SRV_PORT=8443 BI_ADDR2="system:./response.sh"'
+	@echo '	$(CMD) ca.ext EXT_TYPE=CA ca.crt ca.show-crt'
+	@echo '	$(CMD) root.crt && $(CMD) child.crt CA=root CRT_CHAIN=1'
+	@echo '	$(CMD) help'
+	@echo '	$(CMD) link'
 	@echo ''
 	@echo 'tips:'
 	@echo '	curl --cacert root.crt https://localhost'
