@@ -144,13 +144,13 @@ CRT_EXT = $(if $(wildcard $*.ext),-extfile $*.ext,)
 # https://racchai.hatenablog.com/entry/2016/04/14/173000
 # run a ssl server
 %.server: %.crt
-	sudo socat -v -v -v openssl-listen:$(SRV_PORT),verify=0,cert=$<,key=$*.key,fork,reuseaddr $(BI_ADDR2)
+	socat -v -v -v openssl-listen:$(SRV_PORT),verify=0,cert=$<,key=$*.key,fork,reuseaddr $(BI_ADDR2)
 
 # socat proxy(another ver)
 # https://qiita.com/cuzic/items/672c66e8ccdfba067166
 # run a ssl server(another ver).
 %.server2: %.cert
-	sudo socat -v openssl-listen:$(SRV_PORT),verify=0,cert=$< $(BI_ADDR2)
+	socat -v openssl-listen:$(SRV_PORT),verify=0,cert=$< $(BI_ADDR2)
 
 # generate a mix file(key, crt, dhparam) for server2.
 %.cert: %.key %.crt
