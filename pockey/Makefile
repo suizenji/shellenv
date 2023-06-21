@@ -36,6 +36,13 @@ else
 CMD := $(shell basename $(MAKEFILE_LIST))
 endif
 
+# filename
+ifeq ($(MAKEFILE_LIST),Makefile)
+FNAME := Makefile
+else
+FNAME := $(MAKEFILE_LIST)
+endif
+
 .PRECIOUS: %.key %.csr
 
 # show usage.
@@ -61,7 +68,7 @@ usage:
 
 # list this make targets.
 target:
-	@cat Makefile | grep -E -B1 '^[^#\.][^[:space:]]+:' | sed 's/^--//'
+	@cat $(FNAME) | grep -E -B1 '^[^#\.][^[:space:]]+:' | sed 's/^--//'
 
 # show this help.
 help: usage target
@@ -171,7 +178,7 @@ clean:
 
 # show links.
 link:
-	@grep -E -B1 '^# https?://.*' Makefile | sed 's/^--//'
+	@grep -E -B1 '^# https?://.*' $(FNAME) | sed 's/^--//'
 
 # do test
 test:
