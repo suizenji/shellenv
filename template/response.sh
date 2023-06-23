@@ -5,7 +5,7 @@ is_first=1
 while read line; do
     if [[ ${#line} == 1 ]]; then
         req_con_len=$(echo "$req_heads" | grep -Ei content-length | awk '{print $2}')
-        read -n ${req_con_len:-0} req_body
+        read -n ${req_con_len:-0} -d "\0" req_body
         break
     fi
 
