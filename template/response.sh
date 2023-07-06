@@ -30,6 +30,9 @@ $req_heads
 $req_body
 EOF
 )
+
+q_str=$(echo "$REQ" | head -n1 | awk '{print $2}' | sed -E 's/[^?]+\?//')
+
 ### get response <<< ###
 
 RES=$(LC_ALL=C echo $(cat <<EOF
@@ -42,6 +45,7 @@ EOF
 
 BODY="${REQ}"
 #BODY="${RES}"
+#BODY="$q_str"
 
 echo HTTP/1.1 200 OK
 echo Content-Length: ${#BODY}
