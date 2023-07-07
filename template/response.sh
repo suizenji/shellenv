@@ -1,6 +1,6 @@
 #!/bin/bash
 
-### >>> get response ###
+### >>> get request ###
 is_first=1
 while read line; do
     if [[ ${#line} == 1 ]]; then
@@ -30,7 +30,9 @@ $req_heads
 $req_body
 EOF
 )
+### get request <<< ###
 
+### >>> parse request ###
 q_str=$(echo "$REQ" | head -n1 | awk '{print $2}' | sed -E 's/[^?]+\?//')
 
 declare -A q_params=()
@@ -52,8 +54,9 @@ done
 get_q_val () {
     echo ${q_params[$1]}
 }
-## get response <<< ###
+### parse request <<< ###
 
+### >>> generate response ###
 RES=$(LC_ALL=C echo $(cat <<EOF
 <html>
 <head></head>
@@ -62,10 +65,11 @@ RES=$(LC_ALL=C echo $(cat <<EOF
 EOF
 ))
 
-#BODY="${REQ}"
+BODY="${REQ}"
 #BODY="${RES}"
 #BODY="$q_str"
-BODY=$(get_q_val k)
+#BODY=$(get_q_val k)
+### generate response <<< ###
 
 echo HTTP/1.1 200 OK
 echo Content-Length: ${#BODY}
