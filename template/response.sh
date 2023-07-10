@@ -54,6 +54,10 @@ done
 get_q_val () {
     echo ${q_params[$1]}
 }
+
+url_decode () {
+    printf "%b" "${@//%/\\x}"
+}
 ### parse request <<< ###
 
 ### >>> generate response ###
