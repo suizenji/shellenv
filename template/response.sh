@@ -60,11 +60,14 @@ url_decode () {
 }
 ### parse request <<< ###
 
+name=$(url_decode $(get_q_val name))
+len=$(url_decode $(get_q_val len))
+
 ### >>> generate response ###
 RES=$(LC_ALL=C echo $(cat <<EOF
 <html>
 <head></head>
-<body>hello!</body>
+<body>hello ${name}!</body>
 </html>
 EOF
 ))
@@ -75,7 +78,10 @@ BODY="${REQ}"
 #BODY=$(get_q_val k)
 ### generate response <<< ###
 
-echo HTTP/1.1 200 OK
-echo Content-Length: ${#BODY}
-echo 
-echo "${BODY}"
+cat <<EOF
+HTTP/1.1 200 OK
+Content-Length: ${len:-${#BODY}}
+Server: socat
+
+${BODY}
+EOF
