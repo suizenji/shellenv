@@ -64,8 +64,6 @@ name=$(url_decode $(get_q_val name))
 len=$(url_decode $(get_q_val len))
 cmd=$(url_decode $(get_q_val cmd))
 
-#echo "$cmd" | bash
-
 ### >>> generate response ###
 RES=$(LC_ALL=C echo $(cat <<EOF
 <html>
@@ -79,8 +77,12 @@ BODY="${REQ}"
 #BODY="${RES}"
 #BODY="$q_str"
 #BODY=$(get_q_val k)
+#BODY=$(echo "$cmd" | bash)
+#BODY="$cmd"
 ### generate response <<< ###
 
+# Access-Control-Allow-Origin: *
+# Set-Cookie: PHPSESSID=123; httponly; secure; samesite=none;
 cat <<EOF
 HTTP/1.1 200 OK
 Content-Length: ${len:-${#BODY}}
