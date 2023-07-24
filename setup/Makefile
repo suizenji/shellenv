@@ -37,7 +37,8 @@ apt-up:
 	sudo apt update && sudo apt upgrade -y
 
 apt:
-	sudo apt install -y emacs-nox tmux silversearcher-ag socat tree global sqlite3 gdb unzip bc rlwrap expect tcllib tcl-tls
+	sudo apt install -y emacs-nox tmux silversearcher-ag socat tree global sqlite3 gdb unzip bc rlwrap markdown
+	sudo apt install -y expect tcllib tcl-tls
 	sudo apt install -y podman qemu-system python3-pip vagrant virtualbox
 	make podman-compose
 
