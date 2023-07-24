@@ -48,7 +48,7 @@ podman-compose: ~/.local/bin/podman-compose
 	@echo export PATH=\"\$$PATH:~/.local/bin\"
 
 mingw:
-	pacman -S --noconfirm emacs tmux mingw64/mingw-w64-x86_64-ag socat tree global bc rlwrap wget
+	pacman -S --noconfirm emacs tmux mingw64/mingw-w64-x86_64-ag socat tree global bc rlwrap wget cygutils
 	pacman -S --noconfirm clang64/mingw-w64-clang-x86_64-nodejs
 	pacman -S --noconfirm expect mingw64/mingw-w64-x86_64-tcllib
 	pacman -S --noconfirm mingw64/mingw-w64-x86_64-podman mingw64/mingw-w64-x86_64-podman-compose
