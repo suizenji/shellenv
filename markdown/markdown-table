@@ -1,0 +1,52 @@
+#!/usr/bin/awk -f
+
+function row(sep1, sep2) {
+    printf("<tr>");
+    for (i = 1; i <= NF; i++) {
+	if (i == 1) continue;
+	if (i == NF) continue;
+	printf("%s%s%s", sep1, $i, sep2);
+    }
+    printf("</tr>");
+}
+
+BEGIN {
+    FS = "|";
+    mode = "neutral";
+}
+
+mode == "neutral" && /^\|/ {
+    mode = "head";
+    printf("%s\n", "<table>");
+}
+
+/^\| [-]+ \|/ {
+    mode = "body";
+    next;
+}
+
+mode == "head" {
+    printf("%s\n", row("<th>", "</th>"));
+    next;
+}
+
+mode == "body" && NF == 0 {
+    printf("%s\n", "</table>");
+    mode = "neutral";
+    next;
+}
+
+mode == "body" {
+    printf("%s\n", row("<td>", "</td>"));
+    next;
+}
+
+{
+    print;
+}
+
+END {
+    if (mode == "body") {
+	printf("</table>\n")
+    }
+}

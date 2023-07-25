@@ -1,10 +1,11 @@
 install:
 	make install -C detach
 	make install -C postmail
+	make install -C markdown
 	cd pockey && make -f Installer.mk install
 	@echo ''
 	@echo '>>> next'
-	@echo export PATH=\"\$$PATH:$(shell pwd)/bin\"
+	@echo export PATH=\"$(shell pwd)/bin:\$$PATH\"
 
 uninstall:
 	rm ./bin/*
