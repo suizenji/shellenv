@@ -15,12 +15,16 @@ BEGIN {
     mode = "neutral";
 }
 
+{
+#    printf("[%7s] %d: ", mode, NF);
+}
+
 mode == "neutral" && /^\|/ {
     mode = "head";
     printf("%s\n", "<table>");
 }
 
-/^\| [-]+ \|/ {
+/^\| [-]+[ :]\|/ {
     mode = "body";
     next;
 }
