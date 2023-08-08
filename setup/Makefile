@@ -9,11 +9,12 @@ sudo := sudo
 endif
 
 help:
-	@echo for ubuntu 22, git sdk
+	@echo for ubuntu 22, git sdk, mac
 #TODO arch, bsd
 
 windows: mingw winget mingw-conf conf emacs win-bash
 ubuntu: apt-kubic apt-up apt apt-node podman-compose conf emacs
+mac: brew conf emacs
 
 # https://podman.io/getting-started/installation.html#ubuntu
 apt-kubic-repo := https://download.opensuse.org/repositories/devel:kubic:libcontainers:unstable/xUbuntu_$$(lsb_release -rs)
@@ -41,6 +42,15 @@ apt:
 	sudo apt install -y expect tcllib tcl-tls
 	sudo apt install -y podman qemu-system python3-pip vagrant virtualbox
 	make podman-compose
+
+# https://brew.sh/index_ja
+# https://www.macports.org/install.php
+# TODO gdb, vagrant, virtualbox(arm...)
+brew:
+	brew install emacs tmux the_silver_searcher socat tree global sqlite3 unzip bc rlwrap markdown wget
+	brew install tcl-tk
+	brew install podman podman-compose
+	sudo port -N install tcllib
 
 podman-compose: ~/.local/bin/podman-compose
 ~/.local/bin/podman-compose:
