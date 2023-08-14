@@ -14,7 +14,9 @@ help:
 
 windows: mingw winget mingw-conf conf emacs win-bash
 ubuntu: apt-kubic apt-up apt apt-node podman-compose conf emacs
+	make podman-compose
 mac: brew zsh-git-comp conf emacs
+	make zsh-git-comp
 
 # https://podman.io/getting-started/installation.html#ubuntu
 apt-kubic-repo := https://download.opensuse.org/repositories/devel:kubic:libcontainers:unstable/xUbuntu_$$(lsb_release -rs)
@@ -70,10 +72,10 @@ brew:
 	sudo port -N install tcllib
 
 podman-compose: ~/.local/bin/podman-compose
+	@echo '>>> next step'
+	@echo export PATH=\"\$$PATH:~/.local/bin\"
 ~/.local/bin/podman-compose:
 	pip3 install https://github.com/containers/podman-compose/archive/devel.tar.gz
-	@echo '>>> next'
-	@echo export PATH=\"\$$PATH:~/.local/bin\"
 
 mingw:
 	pacman -S --noconfirm emacs tmux mingw64/mingw-w64-x86_64-ag socat tree global bc rlwrap wget cygutils
