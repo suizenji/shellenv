@@ -14,7 +14,7 @@ help:
 
 windows: mingw winget mingw-conf conf emacs win-bash
 ubuntu: apt-kubic apt-up apt apt-node podman-compose conf emacs
-mac: brew conf emacs
+mac: brew zsh-git-comp conf emacs
 
 # https://podman.io/getting-started/installation.html#ubuntu
 apt-kubic-repo := https://download.opensuse.org/repositories/devel:kubic:libcontainers:unstable/xUbuntu_$$(lsb_release -rs)
@@ -42,6 +42,23 @@ apt:
 	sudo apt install -y expect tcllib tcl-tls
 	sudo apt install -y podman qemu-system python3-pip vagrant virtualbox
 	make podman-compose
+
+~/.sh:
+	mkdir -p ~/.sh
+
+~/.sh/git-prompt.sh: ~/.sh
+	curl -o $@ https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh
+
+# https://git-scm.com/book/en/v2/Appendix-A%3A-Git-in-Other-Environments-Git-in-Zsh
+# https://qiita.com/mikan3rd/items/d41a8ca26523f950ea9d
+zsh-git-comp: ~/.sh/git-prompt.sh
+	@echo '>>> next step'
+	@echo source $<
+	@echo 'autoload -Uz compinit && compinit'
+	@echo "setopt PROMPT_SUBST ; PS1='%F{green}%n@%m%f: %F{cyan}%~%f %F{red}\$$(__git_ps1 \"(%s)\")%f"
+	@echo "\\$$ '"
+#	@echo '>>> bash'
+#	@echo PS1="'"'\[\033]0;$$TITLEPREFIX:$$PWD\007\]\n\[\033[32m\]\u@\h \[\033[35m\]$$MSYSTEM \[\033[33m\]\w\[\033[36m\]`__git_ps1`\[\033[0m\]\n$$'"'"
 
 # https://brew.sh/index_ja
 # https://www.macports.org/install.php
