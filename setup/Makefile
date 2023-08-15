@@ -13,7 +13,7 @@ help:
 #TODO arch, bsd
 
 windows: mingw winget mingw-conf conf emacs win-bash
-ubuntu: apt-kubic apt-up apt apt-node podman-compose conf emacs
+ubuntu: apt conf emacs
 	make podman-compose
 mac: brew zsh-git-comp conf emacs
 	make zsh-git-comp
@@ -39,11 +39,11 @@ apt-node:
 apt-up:
 	sudo apt update && sudo apt upgrade -y
 
-apt:
+apt: apt-kubic apt-up
 	sudo apt install -y emacs-nox tmux silversearcher-ag socat tree global sqlite3 gdb unzip bc rlwrap markdown
 	sudo apt install -y expect tcllib tcl-tls
 	sudo apt install -y podman qemu-system python3-pip vagrant virtualbox
-	make podman-compose
+	make apt-node podman-compose
 
 ~/.sh:
 	mkdir -p ~/.sh
