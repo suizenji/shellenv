@@ -70,6 +70,7 @@ brew:
 	brew install tcl-tk
 	brew install podman podman-compose
 	sudo port -N install tcllib
+	brew install n && sudo n latest
 
 podman-compose: ~/.local/bin/podman-compose
 	@echo '>>> next step'
