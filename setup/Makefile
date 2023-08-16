@@ -14,7 +14,7 @@ help:
 
 windows: mingw winget mingw-conf conf emacs win-bash
 ubuntu: apt conf emacs
-	make podman-compose
+	make podman-compose watchexec
 mac: brew zsh-git-comp conf emacs
 	make zsh-git-comp
 
@@ -41,6 +41,7 @@ apt-up:
 
 apt: apt-kubic apt-up
 	sudo apt install -y emacs-nox tmux silversearcher-ag socat tree global sqlite3 gdb unzip bc rlwrap markdown
+	sudo apt install -y cargo && make watchexec
 	sudo apt install -y expect tcllib tcl-tls
 	sudo apt install -y podman qemu-system python3-pip vagrant virtualbox
 	make apt-node podman-compose
@@ -67,6 +68,7 @@ zsh-git-comp: ~/.sh/git-prompt.sh
 # TODO gdb, vagrant, virtualbox(arm...)
 brew:
 	brew install emacs tmux the_silver_searcher socat tree global sqlite3 unzip bc rlwrap markdown wget
+	brew install watchexec
 	brew install tcl-tk
 	brew install podman podman-compose
 	sudo port -N install tcllib
@@ -78,8 +80,15 @@ podman-compose: ~/.local/bin/podman-compose
 ~/.local/bin/podman-compose:
 	pip3 install https://github.com/containers/podman-compose/archive/devel.tar.gz
 
+watchexec: ~/.cargo/bin/watchexec
+	@echo '>>> next step'
+	@echo export PATH=\"\$$PATH:~/.cargo/bin\"
+~/.cargo/bin/watchexec:
+	cargo install --locked watchexec-cli
+
 mingw:
 	pacman -S --noconfirm emacs tmux mingw64/mingw-w64-x86_64-ag socat tree global bc rlwrap wget cygutils
+	pacman -S --noconfirm mingw64/mingw-w64-x86_64-watchexec
 	pacman -S --noconfirm clang64/mingw-w64-clang-x86_64-nodejs
 	pacman -S --noconfirm expect mingw64/mingw-w64-x86_64-tcllib
 	pacman -S --noconfirm mingw64/mingw-w64-x86_64-podman mingw64/mingw-w64-x86_64-podman-compose
