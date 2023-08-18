@@ -33,7 +33,7 @@ endif
 
 # make all URL='https://www.google.com'
 all:
-	make $(call encode,$(URL)).link.all
+	make $(call encode,$(URL)).link
 ifneq ($(DEPTH),1)
 #	make all DEPTH=$$(( $(DEPTH) - 1 ))
 	cat $(subst /,%2F,$(URL)).link | xargs -I{} make all URL='{}' DEPTH=$$(( $(DEPTH) - 1 ))
