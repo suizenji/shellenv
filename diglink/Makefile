@@ -1,6 +1,6 @@
 URL :=
 DEPTH := 1
-DOMAIN :=
+FILTER :=
 
 define encode
 $(shell perl -MURI::Escape -e 'print uri_escape("$(1)");')
@@ -51,11 +51,11 @@ endif
           sort -u > $@
 
 %.link: %.link.all
-ifneq ($(DOMAIN),)
-	cat $< | grep -E "$(DOMAIN)" > $@
+ifneq ($(FILTER),)
+	cat $< | grep -E "$(FILTER)" > $@
 else
 	cat $< > $@
 endif
 
 clean:
-	rm -f *.html *.link
+	rm -f *.html *.link.all *.link
