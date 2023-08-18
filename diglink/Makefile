@@ -36,7 +36,7 @@ all:
 	make $(call encode,$(URL)).link
 ifneq ($(DEPTH),1)
 #	make all DEPTH=$$(( $(DEPTH) - 1 ))
-	cat $(subst /,%2F,$(URL)).link | xargs -I{} make all URL='{}' DEPTH=$$(( $(DEPTH) - 1 ))
+	@cat $(call encode,$(URL)).link | perl -MURI::Escape -nE 'say uri_escape($$_) . ".link"' | xargs make
 endif
 
 .PRECIOUS: %.html
