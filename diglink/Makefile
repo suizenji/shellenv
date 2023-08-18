@@ -11,7 +11,7 @@ $(shell printf "%b" "$(subst %,\\x,$1)")
 endef
 
 define schema-host
-$(shell echo '$1' | sed -E 's%^(https?://[^/]+).*%\1%')
+$(shell echo '$(call decode,$1)' | sed -E 's%^(https?://[^/]+).*%\1%')
 endef
 
 help:
@@ -47,7 +47,7 @@ endif
 	cat $< | \
           ag -o ' href="[^"]+"' | \
           sed -E 's/.*href="([^"]+)"/\1/g' | \
-          sed 's%^/%$(subst %2F,/,$<)/%' | \
+          sed 's%^/%$(call schema-host,$*)/%' | \
           sort -u > $@
 
 %.link: %.link.all
