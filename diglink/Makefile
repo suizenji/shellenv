@@ -1,6 +1,7 @@
 URL :=
 DEPTH := 1
 FILTER :=
+ARGS :=
 
 define encode
 $(shell perl -MURI::Escape -e 'print uri_escape("$(1)");')
@@ -35,24 +36,25 @@ endif
 all:
 	make $(call encode,$(URL)).link
 ifneq ($(DEPTH),1)
+	@cat $(call encode,$(URL)).link | perl -MURI::Escape -nE 'say uri_escape($$_) . ".link"' | xargs make -j $(ARGS)
+# TODO cat xxx.link | xargs -I{} make all DEPTH=$$(( $(DEPTH) - 1 )) URL='{}'
 #	make all DEPTH=$$(( $(DEPTH) - 1 ))
-	@cat $(call encode,$(URL)).link | perl -MURI::Escape -nE 'say uri_escape($$_) . ".link"' | xargs make
 endif
 
 .PRECIOUS: %.html
 %.html:
-	curl $(call decode,$*) > $@
+	curl '$(call decode,$*)' > $@
 
 %.link.all: %.html
 	cat $< | \
           ag -o ' href="[^"]+"' | \
-          sed -E 's/.*href="([^"]+)"/\1/g' | \
+          sed -E 's/.*href="([^"]+)"/\1/gi' | \
           sed 's%^/%$(call schema-host,$*)/%' | \
           sort -u > $@
 
 %.link: %.link.all
 ifneq ($(FILTER),)
-	cat $< | grep -E "$(FILTER)" > $@
+	cat $< | grep -E "$(FILTER)" | tee -a $@ > /dev/null
 else
 	cat $< > $@
 endif
