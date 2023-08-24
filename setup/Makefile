@@ -67,7 +67,7 @@ zsh-git-comp: ~/.sh/git-prompt.sh
 # https://www.macports.org/install.php
 # TODO gdb, vagrant, virtualbox(arm...)
 brew:
-	brew install emacs tmux the_silver_searcher socat tree global sqlite3 unzip bc rlwrap markdown wget
+	brew install bash emacs tmux the_silver_searcher socat tree global sqlite3 unzip bc rlwrap markdown wget
 	brew install watchexec
 	brew install tcl-tk
 	brew install podman podman-compose
