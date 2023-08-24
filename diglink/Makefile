@@ -37,7 +37,7 @@ all:
 	make $(call encode,$(URL)).link
 ifneq ($(DEPTH),1)
 	@cat $(call encode,$(URL)).link | \
-          perl -MURI::Escape -nE 'say uri_escape($$_) . ".link"' | \
+          perl -MURI::Escape -nE 'say uri_escape($$_) . ".link"' | sed 's/%0A//' | \
           xargs make -j FILTER="$(FILTTER)" $(ARGS)
 	@cat *.link | sort -u | \
           xargs -I{} -P0 make all FILTER="$(FILTTER)" ARGS=$(ARGS) DEPTH=$$(( $(DEPTH) - 1 )) URL='{}'
