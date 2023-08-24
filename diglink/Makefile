@@ -12,7 +12,7 @@ $(shell printf "%b" "$(subst %,\\x,$1)")
 endef
 
 define schema-host
-$(shell echo '$(call decode,$1)' | sed -E 's%^(https?://[^/]+).*%\1%')
+$(shell printf '%s' '$(call decode,$1)' | sed -E 's%^(https?://[^/]+).*%\1%')
 endef
 
 help:
