@@ -1,6 +1,6 @@
 URL :=
 DEPTH := 1
-FILTER :=
+FILTER := .*
 ARGS :=
 
 define encode
@@ -36,7 +36,10 @@ endif
 all:
 	make $(call encode,$(URL)).link
 ifneq ($(DEPTH),1)
-	@cat $(call encode,$(URL)).link | perl -MURI::Escape -nE 'say uri_escape($$_) . ".link"' | xargs make -j $(ARGS)
+	@cat $(call encode,$(URL)).link | \
+          perl -MURI::Escape -nE 'say uri_escape($$_) . ".link"' | \
+          xargs make -j FILTER="$(FILTTER)" $(ARGS)
+#	cat *.link | sort -u | xargs -I{} make all DEPTH=$$(( $(DEPTH) - 1 )) FILTER="$(FILTTER)" URL='{}'
 # TODO cat xxx.link | xargs -I{} make all DEPTH=$$(( $(DEPTH) - 1 )) URL='{}'
 #	make all DEPTH=$$(( $(DEPTH) - 1 ))
 endif
@@ -53,11 +56,7 @@ endif
           sort -u > $@
 
 %.link: %.link.all
-ifneq ($(FILTER),)
 	cat $< | grep -E "$(FILTER)" | tee -a $@ > /dev/null
-else
-	cat $< > $@
-endif
 
 clean:
 	rm -f *.html *.link.all *.link
