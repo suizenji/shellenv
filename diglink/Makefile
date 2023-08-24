@@ -41,8 +41,6 @@ ifneq ($(DEPTH),1)
           xargs make -j FILTER="$(FILTTER)" $(ARGS)
 	@cat *.link | sort -u | \
           xargs -I{} -P0 make all FILTER="$(FILTTER)" ARGS=$(ARGS) DEPTH=$$(( $(DEPTH) - 1 )) URL='{}'
-# TODO cat xxx.link | xargs -I{} make all DEPTH=$$(( $(DEPTH) - 1 )) URL='{}'
-#	make all DEPTH=$$(( $(DEPTH) - 1 ))
 endif
 
 .PRECIOUS: %.html
@@ -54,6 +52,8 @@ endif
           ag -o ' href="[^"]+"' | \
           sed -E 's/.*href="([^"]+)"/\1/gi' | \
           sed 's%^/%$(call schema-host,$*)/%' | \
+          sed 's%^../%$(call schema-host,$*)/%' | \
+          sed 's%^#%#$(call schema-host,$*)%' | \
           sort -u > $@
 
 %.link: %.link.all
