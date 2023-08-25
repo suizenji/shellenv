@@ -8,7 +8,7 @@ $(shell perl -MURI::Escape -e 'print uri_escape("$(1)");')
 endef
 
 define decode
-$(shell printf "%b" "$(subst %,\\x,$1)")
+$(shell perl -MURI::Escape -e 'print uri_unescape("$(1)");')
 endef
 
 define schema-host
