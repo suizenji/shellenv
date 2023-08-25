@@ -55,8 +55,9 @@ endif
           ag -o ' href="[^"]+"' | \
           sed -E 's/.*href="([^"]+)"/\1/gi' | \
           sed 's%^/%$(call schema-host,$*)/%' | \
-          sed 's%^../%$(call schema-host,$*)/%' | \
-          sed 's%^#%#$(call schema-host,$*)%' | \
+          sed 's%^./%$(call schema-host,$*)/./%' | \
+          sed 's%^../%$(call schema-host,$*)/../%' | \
+          sed 's%^#%$(call schema-host,$*)/#%' | \
           sort -u > $@
 
 %.link: %.link.all
