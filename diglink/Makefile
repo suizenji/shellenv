@@ -39,7 +39,10 @@ ifneq ($(DEPTH),1)
 	@cat $(call encode,$(URL)).link | \
           perl -MURI::Escape -nE 'say uri_escape($$_) . ".link"' | sed 's/%0A//' | \
           xargs make -j FILTER="$(FILTTER)" $(ARGS)
-	@cat *.link | sort -u | \
+	@cat $(call encode,$(URL)).link | \
+          perl -MURI::Escape -nE 'say uri_escape($$_) . ".link"' | sed 's/%0A//' | \
+          xargs cat | sort -u | \
+          perl -MURI::Escape -nE 'say uri_unescape($$_) . ".link"' | sed 's/%0A//' | \
           xargs -I{} -P0 make all FILTER="$(FILTTER)" ARGS=$(ARGS) DEPTH=$$(( $(DEPTH) - 1 )) URL='{}'
 endif
 
