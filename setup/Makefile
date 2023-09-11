@@ -121,7 +121,10 @@ win-bash: ~/bash.cmd
 snap:
 	sudo snap install firefox
 
-~/.emacs.d:
+pylsp:
+	python3 -m pip install 'python-lsp-server[all]'
+
+~/.emacs.d: pylsp
 	git clone https://github.com/suizenji/emacs.git $@
 
 ~/.emacs.d/init.elc: ~/.emacs.d
