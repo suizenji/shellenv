@@ -27,6 +27,7 @@ apt-kubic: $(apt-kubic-key) $(apt-kubic-list)
 
 $(apt-kubic-key):
 	curl -fsSL $(apt-kubic-repo)/Release.key | gpg --dearmor | sudo tee "$@" > /dev/null
+	sudo apt update && sudo apt upgrade -y
 
 $(apt-kubic-list):
 	echo "deb [arch=$$(dpkg --print-architecture) signed-by=$(apt-kubic-key)] $(apt-kubic-repo)/ /" | sudo tee $@ > /dev/null
@@ -36,10 +37,7 @@ apt-node:
 	sudo npm install --global n && sudo n install lts && sudo apt remove -y nodejs npm
 	sudo apt -y autoremove
 
-apt-up:
-	sudo apt update && sudo apt upgrade -y
-
-apt: apt-kubic apt-up
+apt: apt-kubic
 	sudo apt install -y emacs-nox tmux silversearcher-ag socat tree global sqlite3 gdb unzip bc rlwrap markdown
 	sudo apt install -y cargo && make watchexec
 	sudo apt install -y expect tcllib tcl-tls
