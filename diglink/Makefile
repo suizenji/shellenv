@@ -65,3 +65,7 @@ endif
 
 clean:
 	rm -f *.html *.link.all *.link
+
+#get_src () { cat "$1" | ag -- '<audio' | ag -o 'src="[^"]+"' | cut -b 6- | tr -d '"'; }
+#curl 'https://ja.wikipedia.org/wiki/%E5%B9%BB%E6%83%B3%E6%9B%B2D940' > html.txt
+#get_src html.txt | xargs -L1 -P0 -I{} echo 'wget https:{}' | xargs -n1 -P0 -I{} sh -c {}
