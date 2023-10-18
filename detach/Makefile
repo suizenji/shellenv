@@ -4,7 +4,8 @@ install: ../bin/detach
 	cp $< $@
 
 test:
-	touch file1 file2
+	mkdir file1
+	touch file1/file file2
 	./detach file1 file2
 	test ! -e file1 && test ! -e file2
 	./detach ls | grep '/detach/file1'

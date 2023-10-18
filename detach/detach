@@ -186,7 +186,7 @@ proc clear {} {
 	set config [dict get $config_info config]
 	set file "${basepath}/${id}"
 
-	if {[catch {[file delete $file]} err]} {
+	if {[catch {[file delete -force $file]} err]} {
 	    # FIXME: what is 'invalid command name ""'?
 	    if {$err != "invalid command name \"\""} {
 		puts stderr $err
