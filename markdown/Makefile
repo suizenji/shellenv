@@ -1,6 +1,6 @@
-install: ../bin/markdown ../bin/markdown-table
+install: ../bin/md ../bin/markdown-table
 
-../bin/markdown: markdown
+../bin/md: md
 	cp $< $@
 
 ../bin/markdown-table: markdown-table
