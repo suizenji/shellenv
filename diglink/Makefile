@@ -60,6 +60,9 @@ endif
           sed 's%^#%$(call schema-host,$*)/#%' | \
           sort -u > $@
 
+# TODO filterのひきつぎできてなくね
+# TODO . / # 以外で始まるリンク
+
 %.link: %.link.all
 	cat $< | grep -E "$(FILTER)" | tee -a $@ > /dev/null
 
