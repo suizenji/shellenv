@@ -38,7 +38,7 @@ apt-node:
 	sudo apt -y autoremove
 
 apt: apt-kubic
-	sudo apt install -y emacs-nox tmux silversearcher-ag socat tree global sqlite3 gdb unzip bc rlwrap markdown
+	sudo apt install -y emacs-nox tmux silversearcher-ag socat tree global sqlite3 gdb unzip bc rlwrap markdown jq
 	sudo apt install -y cargo && make watchexec
 	sudo apt install -y expect tcllib tcl-tls
 	sudo apt install -y podman qemu-system python3-pip vagrant virtualbox
@@ -65,7 +65,7 @@ zsh-git-comp: ~/.sh/git-prompt.sh
 # https://www.macports.org/install.php
 # TODO gdb, vagrant, virtualbox(arm...)
 brew:
-	brew install bash emacs tmux the_silver_searcher socat tree global sqlite3 unzip bc rlwrap markdown wget
+	brew install bash emacs tmux the_silver_searcher socat tree global sqlite3 unzip bc rlwrap markdown wget jq
 	brew install watchexec
 	brew install tcl-tk
 	brew install podman podman-compose
@@ -85,7 +85,7 @@ watchexec: ~/.cargo/bin/watchexec
 	cargo install --locked watchexec-cli
 
 mingw:
-	pacman -S --noconfirm emacs tmux mingw64/mingw-w64-x86_64-ag socat tree global bc rlwrap wget cygutils
+	pacman -S --noconfirm emacs tmux mingw64/mingw-w64-x86_64-ag socat tree global bc rlwrap wget cygutils  mingw64/mingw-w64-x86_64-jq
 	pacman -S --noconfirm mingw64/mingw-w64-x86_64-watchexec
 	pacman -S --noconfirm clang64/mingw-w64-clang-x86_64-nodejs
 	pacman -S --noconfirm expect mingw64/mingw-w64-x86_64-tcllib
