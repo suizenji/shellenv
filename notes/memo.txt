@@ -1,0 +1,17 @@
+docker and docker-compose on mac
+https://qiita.com/yamachita0109/items/fa81a82f49212aaf8c1d
+https://zenn.dev/redgosho/articles/ee2bd023a946a2
+
+$ brew install docker docker-compose
+$ # get https://github.com/lima-vm/lima/blob/master/examples/docker.yaml
+$ limactl start docker.yaml
+...
+To run `docker` on the host (assumes docker-cli is installed), run the following commands:
+------
+docker context create lima-docker --docker "host=unix:///Users/takeya/.lima/docker/sock/docker.sock"
+docker context use lima-docker
+docker run hello-world
+------
+
+
+
