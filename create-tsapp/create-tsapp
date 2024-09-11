@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+DIST=${1:-tsapp}
+
+mkdir -p "${DIST}"
+cd "${DIST}"
+
+test -e package.json && {
+  echo 'Project already exists.'
+  exit 1
+}
+
+npm init -y
+npm i -D typescript @types/node ts-node nodemon
+
+npx tsc --init
+SED=$(which gsed >/dev/null && echo gsed || echo sed)
+${SED} -i '/outDir/a\    "outDir": "./dist",' tsconfig.json
+
+touch .gitignore
+echo /node_modules >> .gitignore
+echo /dist >> .gitignore
+git init && git add . && git commit -m 'first commit'
+
+echo "console.log('happy hacking!')" > index.ts
+npx tsc
+node ./dist/index.js
