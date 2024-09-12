@@ -11,7 +11,7 @@ test -e package.json && {
 }
 
 npm init -y
-npm i -D typescript @types/node ts-node tsconfig-paths nodemon
+npm i -D typescript @types/node ts-node tsconfig-paths tsc-alias nodemon
 
 npx tsc --init
 SED=$(which gsed >/dev/null && echo gsed || echo sed)
@@ -21,7 +21,20 @@ ${SED} -i '/^{/ {
   a\    "require": ["tsconfig-paths/register"]
   a\  },
 }' tsconfig.json
-# TODO: paths @/
+
+# TODO: paths
+# TODO: incremental build
+
+cat <<EOF > Makefile
+build:
+	npx tsc
+	npx tsc-alias
+
+watch:
+	npx tsc -w & \
+	npx nodemon --watch dist/**/* --exec 'npx tsc-alias' & \
+	wait
+EOF
 
 touch .gitignore
 echo /node_modules >> .gitignore
