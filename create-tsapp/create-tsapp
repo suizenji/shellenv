@@ -11,11 +11,17 @@ test -e package.json && {
 }
 
 npm init -y
-npm i -D typescript @types/node ts-node nodemon
+npm i -D typescript @types/node ts-node tsconfig-paths nodemon
 
 npx tsc --init
 SED=$(which gsed >/dev/null && echo gsed || echo sed)
 ${SED} -i '/outDir/a\    "outDir": "./dist",' tsconfig.json
+${SED} -i '/^{/ {
+  a\  "ts-node": {
+  a\    "require": ["tsconfig-paths/register"]
+  a\  },
+}' tsconfig.json
+# TODO: paths @/
 
 touch .gitignore
 echo /node_modules >> .gitignore
