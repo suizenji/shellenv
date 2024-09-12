@@ -2,6 +2,7 @@
 
 DIST=${1:-tsapp}
 
+# create a project
 mkdir -p "${DIST}"
 cd "${DIST}"
 
@@ -10,22 +11,28 @@ test -e package.json && {
   exit 1
 }
 
+# nodejs setup
 npm init -y
 npm i -D typescript @types/node ts-node tsconfig-paths tsc-alias nodemon
 
+# tsconfig setup
 npx tsc --init
 SED=$(which gsed >/dev/null && echo gsed || echo sed)
-${SED} -i '/outDir/a\    "outDir": "./dist",' tsconfig.json
+${SED} -i '/"outDir":/a\    "outDir": "./dist",' tsconfig.json
+${SED} -i '/"incremental":/a\    "incremental": true,' tsconfig.json
+${SED} -i '/"paths":/ {
+  a\    "paths": {
+  a\      "@/*": ["./*"]
+  a\    },
+}' tsconfig.json
 ${SED} -i '/^{/ {
   a\  "ts-node": {
   a\    "require": ["tsconfig-paths/register"]
   a\  },
 }' tsconfig.json
 
-# TODO: paths
-# TODO: incremental build
-
-cat <<EOF > Makefile
+# builder
+cat <<'EOF' > Makefile
 build:
 	npx tsc
 	npx tsc-alias
@@ -36,11 +43,19 @@ watch:
 	wait
 EOF
 
+# versioning
 touch .gitignore
 echo /node_modules >> .gitignore
 echo /dist >> .gitignore
 git init && git add . && git commit -m 'first commit'
 
-echo "console.log('happy hacking!')" > index.ts
-npx tsc
+# test
+echo "import { module } from '@/module'
+module();" > index.ts
+
+echo "export function module() {
+  console.log('happy hacking!');
+}" > module.ts
+
+make
 node ./dist/index.js
