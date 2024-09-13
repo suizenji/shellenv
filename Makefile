@@ -1,4 +1,5 @@
 install:
+	mkdir -p bin
 	make install -C detach
 	make install -C postmail
 	make install -C markdown
