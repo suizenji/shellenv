@@ -20,6 +20,7 @@ npx tsc --init
 SED=$(which gsed >/dev/null && echo gsed || echo sed)
 ${SED} -i '/"outDir":/a\    "outDir": "./dist",' tsconfig.json
 ${SED} -i '/"incremental":/a\    "incremental": true,' tsconfig.json
+${SED} -i '/"resolveJsonModule":/a\    "resolveJsonModule": true,' tsconfig.json
 ${SED} -i '/"paths":/ {
   a\    "paths": {
   a\      "@/*": ["./*"]
