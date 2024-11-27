@@ -1,0 +1,69 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  foo
+  bar
+
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html
+Parameters:
+  Arch:
+    Type: String
+    Default: x86_64
+    AllowedValues:
+      - x86_64
+      - arm64
+  Env:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - stg
+      - prod
+
+Mappings:
+  EnvironmentMap:
+    dev:
+      Foo: bar
+    stg:
+      Foo: hoge
+      SubnetIds: [subnet-XXX]
+      SecurityGroupIds: [sg-XXX]
+    prod:
+      Foo: huga
+      SubnetIds: [subnet-XXX]
+      SecurityGroupIds: [sg-XXX]
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 60
+    MemorySize: 512
+    Environment:
+      Variables:
+        TZ: Asia/Tokyo
+
+Resources:
+  FuncName:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: app/
+      FunctionName: !Sub function-${Env}
+      Handler: app.lambdaHandler
+      Runtime: nodejs20.x
+      Architectures:
+      - !Ref Arch
+      Environment:
+        Variables:
+          FOO: !FindInMap [EnvironmentMap, !Ref Env, Foo]
+      VpcConfig:
+        SubnetIds: !FindInMap [EnvironmentMap, !Ref Env, SubnetIds]
+        SecurityGroupIds: !FindInMap [EnvironmentMap, !Ref Env, SecurityGroupIds]
+
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: es2020
+        Sourcemap: true
+        EntryPoints:
+        - app.ts
