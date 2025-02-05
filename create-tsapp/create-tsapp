@@ -1,5 +1,23 @@
 #!/usr/bin/env bash
 
+parse() {
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+    -h | --help) FLAG_HELP=1; shift ;;
+    --with-src) FLAG_WITH_SRC=1; shift ;;
+    --) shift ;;
+    *) ARGS="$@"; break ;;
+    esac
+  done
+}
+parse "$@"
+set -- $ARGS
+
+if [ "$FLAG_HELP" == "1" ]; then
+  echo 'TODO: help'
+  exit 1
+fi
+
 PJ=${1:-tsapp}
 SED=$(which gsed >/dev/null && echo gsed || echo sed)
 
