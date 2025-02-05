@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
-DIST=${1:-tsapp}
+PJ=${1:-tsapp}
+SED=$(which gsed >/dev/null && echo gsed || echo sed)
 
 # create a project
-mkdir -p "${DIST}"
-cd "${DIST}"
+mkdir -p "${PJ}"
+cd "${PJ}"
 
 test -e package.json && {
   echo 'Project already exists.'
@@ -13,12 +14,17 @@ test -e package.json && {
 
 # nodejs setup
 npm init -y
+
+${SED} -i 's:index.js:./dist/index.js:' package.json
+${SED} -i '/"scripts":/ {
+  a\    "start": "node ./dist",
+}' package.json
+
 npm i -D typescript @types/node ts-node tsconfig-paths tsc-alias nodemon
 
 # tsconfig setup
 npx tsc --init --outDir ./dist --incremental true --resolveJsonModule true
 
-SED=$(which gsed >/dev/null && echo gsed || echo sed)
 ${SED} -i '/"paths":/ {
   a\    "paths": {
   a\      "@/*": ["./*"]
@@ -57,4 +63,4 @@ echo "export function module() {
 }" > module.ts
 
 make
-node ./dist/index.js
+npm start
