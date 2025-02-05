@@ -16,11 +16,9 @@ npm init -y
 npm i -D typescript @types/node ts-node tsconfig-paths tsc-alias nodemon
 
 # tsconfig setup
-npx tsc --init
+npx tsc --init --outDir ./dist --incremental true --resolveJsonModule true
+
 SED=$(which gsed >/dev/null && echo gsed || echo sed)
-${SED} -i '/"outDir":/a\    "outDir": "./dist",' tsconfig.json
-${SED} -i '/"incremental":/a\    "incremental": true,' tsconfig.json
-${SED} -i '/"resolveJsonModule":/a\    "resolveJsonModule": true,' tsconfig.json
 ${SED} -i '/"paths":/ {
   a\    "paths": {
   a\      "@/*": ["./*"]
