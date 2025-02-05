@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 
+SRC=.
+
 parse() {
   while [ "$#" -gt 0 ]; do
     case "$1" in
     -h | --help) FLAG_HELP=1; shift ;;
-    --with-src) FLAG_WITH_SRC=1; shift ;;
+    --with-src) SRC='./src'; shift ;;
     --) shift ;;
     *) ARGS="$@"; break ;;
     esac
@@ -14,8 +16,8 @@ parse "$@"
 set -- $ARGS
 
 if [ "$FLAG_HELP" == "1" ]; then
-  echo 'TODO: help'
-  exit 1
+  echo 'usage: command [--with-src] [project]'
+  exit
 fi
 
 PJ=${1:-tsapp}
@@ -37,7 +39,7 @@ ${SED} -i -f <(cat <<EOF
 s:index.js:./dist/index.js:
 /"scripts":/ {
   a\    "start": "node ./dist",
-  a\    "dev": "NODE_ENV=development npx nodemon --watch './**/*.ts' --exec ts-node index.ts",
+  a\    "dev": "NODE_ENV=development npx nodemon --watch './**/*.ts' --exec ts-node ${SRC}/index.ts",
 }
 EOF
 ) package.json
@@ -50,7 +52,7 @@ npx tsc --init --outDir ./dist --incremental true --resolveJsonModule true
 ${SED} -i -f <(cat <<EOF
 /"paths":/ {
   a\    "paths": {
-  a\      "@/*": ["./*"]
+  a\      "@/*": ["${SRC}/*"]
   a\    },
 }
 /^{/ {
@@ -80,12 +82,14 @@ echo /dist >> .gitignore
 git init && git add . && git commit -m 'first commit'
 
 # test
+mkdir -p "${SRC}"
+
 echo "import { module } from '@/module'
-module();" > index.ts
+module();" > "${SRC}/index.ts"
 
 echo "export function module() {
   console.log('happy hacking!');
-}" > module.ts
+}" > "${SRC}/module.ts"
 
 make
 npm start
