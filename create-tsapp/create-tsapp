@@ -18,6 +18,7 @@ npm init -y
 ${SED} -i 's:index.js:./dist/index.js:' package.json
 ${SED} -i '/"scripts":/ {
   a\    "start": "node ./dist",
+  a\    "dev": "NODE_ENV=development npx nodemon --watch \\"./**/*.ts\\" --exec ts-node index.ts",
 }' package.json
 
 npm i -D typescript @types/node ts-node tsconfig-paths tsc-alias nodemon
