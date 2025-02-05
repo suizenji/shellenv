@@ -33,27 +33,33 @@ test -e package.json && {
 # nodejs setup
 npm init -y
 
-${SED} -i 's:index.js:./dist/index.js:' package.json
-${SED} -i '/"scripts":/ {
+${SED} -i -f <(cat <<EOF
+s:index.js:./dist/index.js:
+/"scripts":/ {
   a\    "start": "node ./dist",
-  a\    "dev": "NODE_ENV=development npx nodemon --watch \\"./**/*.ts\\" --exec ts-node index.ts",
-}' package.json
+  a\    "dev": "NODE_ENV=development npx nodemon --watch './**/*.ts' --exec ts-node index.ts",
+}
+EOF
+) package.json
 
 npm i -D typescript @types/node ts-node tsconfig-paths tsc-alias nodemon
 
 # tsconfig setup
 npx tsc --init --outDir ./dist --incremental true --resolveJsonModule true
 
-${SED} -i '/"paths":/ {
+${SED} -i -f <(cat <<EOF
+/"paths":/ {
   a\    "paths": {
   a\      "@/*": ["./*"]
   a\    },
-}' tsconfig.json
-${SED} -i '/^{/ {
+}
+/^{/ {
   a\  "ts-node": {
   a\    "require": ["tsconfig-paths/register"]
   a\  },
-}' tsconfig.json
+}
+EOF
+) tsconfig.json
 
 # builder
 cat <<'EOF' > Makefile
