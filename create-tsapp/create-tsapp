@@ -7,8 +7,8 @@ parse() {
     case "$1" in
     -h | --help) FLAG_HELP=1; shift ;;
     --with-src) SRC='./src'; shift ;;
-    --) shift ;;
-    *) ARGS="$@"; break ;;
+    --) shift; ARGS="$ARGS $@"; break ;;
+    *) ARGS="$ARGS $1"; shift ;;
     esac
   done
 }
