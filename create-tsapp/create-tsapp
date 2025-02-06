@@ -20,7 +20,7 @@ if [ "$FLAG_HELP" == "1" ]; then
   exit
 fi
 
-PJ=${1:-tsapp}
+PJ=${1:-app}
 SED=$(which gsed >/dev/null && echo gsed || echo sed)
 
 # create a project
