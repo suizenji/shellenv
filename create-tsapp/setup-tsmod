@@ -1,0 +1,17 @@
+#!/usr/bin/env make -f
+
+define PRETTIERRC
+{
+  "singleQuote": true
+}
+endef
+export PRETTIERRC
+
+help:
+	@echo 'usage: command [options..]'
+	@echo 'options: prettier'
+
+prettier: .prettierrc
+	npm i -D prettier
+.prettierrc:
+	echo "$$PRETTIERRC" > $@
