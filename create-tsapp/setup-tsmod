@@ -1,5 +1,10 @@
 #!/usr/bin/env make -f
 
+help:
+	@echo 'usage: command [options..]'
+	@echo 'options: prettier, husky'
+
+### prettier
 define PRETTIERRC
 {
   "singleQuote": true
@@ -7,11 +12,38 @@ define PRETTIERRC
 endef
 export PRETTIERRC
 
-help:
-	@echo 'usage: command [options..]'
-	@echo 'options: prettier'
-
 prettier: .prettierrc
 	npm i -D prettier
 .prettierrc:
 	echo "$$PRETTIERRC" > $@
+
+### husky
+define LINTSTAGEDRC
+const path = require('path');
+
+const f = (filenames, join = ' ') =>
+  filenames.map((f) => path.relative(process.cwd(), f)).join(join);
+
+const buildEslintCommand = (filenames) =>
+  `npx eslint $${f(filenames, '--file')}`;
+
+const buildPrettierCommand = (filenames) => `prettier --write $${f(filenames)}`;
+
+module.exports = {
+  '*.{js,jsx,ts,tsx}': [
+    () => 'tsc --incremental false --noEmit',
+    // buildEslintCommand,
+    // buildPrettierCommand,
+  ],
+};
+endef
+export LINTSTAGEDRC
+
+husky: .husky .husky/pre-commit .lintstagedrc.js
+.husky:
+	npm install -D husky
+	npx husky init
+.husky/pre-commit: .husky
+	echo 'npx lint-staged' > $@
+.lintstagedrc.js:
+	echo "$$LINTSTAGEDRC" > $@
