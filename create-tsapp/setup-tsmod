@@ -2,7 +2,7 @@
 
 help:
 	@echo 'usage: command [options..]'
-	@echo 'options: prettier, husky'
+	@echo 'options: prettier, husky, eslint'
 
 ### prettier
 define PRETTIERRC
@@ -25,7 +25,7 @@ const f = (filenames, join = ' ') =>
   filenames.map((f) => path.relative(process.cwd(), f)).join(join);
 
 const buildEslintCommand = (filenames) =>
-  `npx eslint $${f(filenames, '--file')}`;
+  `npx eslint --max-warnings=0 --fix $${f(filenames)}`;
 
 const buildPrettierCommand = (filenames) => `prettier --write $${f(filenames)}`;
 
@@ -47,3 +47,7 @@ husky: .husky .husky/pre-commit .lintstagedrc.js
 	echo 'npx lint-staged' > $@
 .lintstagedrc.js:
 	echo "$$LINTSTAGEDRC" > $@
+
+### eslint
+eslint:
+	npm init @eslint/config@latest -- --config eslint-config-standard
