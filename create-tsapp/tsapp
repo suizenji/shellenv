@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+parse() {
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+    -h | --help) FLAG_HELP=1; break ;;
+    create) SUBCOM=create; shift; ARGS="$@"; break ;;
+    setup) SUBCOM=setup; shift; ARGS="$@"; break ;;
+    *) FLAG_HELP=1; break ;;
+    esac
+  done
+}
+parse "$@"
+set -- $ARGS
+
+show-help() {
+  echo 'usage: command [create|setup] [options..]'
+  exit
+}
+
+if [ "$FLAG_HELP" == "1" ]; then
+  show-help
+fi
+
+if [ "$SUBCOM" == "create" ]; then
+  create-tsapp "$@"
+elif [ "$SUBCOM" == "setup" ]; then
+  if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
+    setup-tsmod help
+  else
+    setup-tsmod "${@:-help}"
+  fi
+else
+  show-help
+fi
