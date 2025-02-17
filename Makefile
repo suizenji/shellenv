@@ -3,7 +3,7 @@ install:
 	make install -C detach
 	make install -C postmail
 	make install -C markdown
-	make install -C create-tsapp
+	make install -C tsapp
 	cd pockey && make -f Installer.mk install
 	@echo ''
 	@echo '>>> next'
