@@ -1,1 +1,0 @@
-docker run --rm -v ./:/app -w /app -it --entrypoint bash 9e0a11f69925

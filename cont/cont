@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+
+parse() {
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+    -h | --help) FLAG_HELP=1; break ;;
+    conf) SUBCOM=conf; shift; ARGS="$@"; break ;;
+    *) ARGS="$@"; break ;;
+    esac
+  done
+}
+parse "$@"
+set -- $ARGS
+
+show-help() {
+  echo 'usage: command [conf|xxx]'
+  exit
+}
+
+if [ "$FLAG_HELP" == "1" ]; then
+  show-help
+fi
+
+### main proc
+BASE="${HOME}/.cont"
+NAME="${PWD//\//_}"
+NAME="${NAME/_/}"
+CONF="${BASE}/${NAME}.mk"
+
+if [ "$SUBCOM" == "conf" ]; then
+  parse() {
+    while [ "$#" -gt 0 ]; do
+      case "$1" in
+      -h | --help) FLAG_HELP=1; shift ;;
+      -i | --image) IMG="$2"; shift 2 ;;
+      -d | --delete) FLAG_DELETE=1; shift ;;
+      *) ARGS="$@"; break ;;
+      esac
+    done
+  }
+  parse "$@"
+  set -- $ARGS
+
+  show-help() {
+    echo 'usage: command conf [-i|--image image] [-d|--delete]'
+    exit
+  }
+
+  if [ "$FLAG_HELP" == "1" ]; then
+    show-help
+  fi
+
+  if [ "$FLAG_DELETE" == "1" ]; then
+    rm "${CONF}"
+    exit
+  fi
+
+  ### main proc
+  mkdir -p "${BASE}"
+
+  cat <<EOF > "${CONF}"
+VM := podman
+NAME := ${NAME}
+IMG := ${IMG:-$NAME}
+
+all:
+	@cat "$CONF"
+
+build:
+	\$(VM) build . -t \$(NAME)
+
+run:
+	\$(VM) run -v ./:/app --rm -w /app -itd --name \$(NAME) --entrypoint bash \$(IMG)
+
+stop:
+	\$(VM) stop \$(NAME)
+
+rmi:
+	\$(VM) rmi \$(NAME)
+
+bash:
+	\$(VM) exec -it \$(NAME) bash
+EOF
+
+exit 0
+fi
+
+if [ ! -e "${CONF}" ]; then
+  show-help
+fi
+
+make -f "${CONF}" "$@"
