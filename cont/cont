@@ -33,6 +33,8 @@ if [ "$SUBCOM" == "conf" ]; then
       case "$1" in
       -h | --help) FLAG_HELP=1; shift ;;
       -i | --image) IMG="$2"; shift 2 ;;
+      -l | --list) FLAG_LIST=1; shift ;;
+      -e | --edit) FLAG_EDIT=1; shift ;;
       -d | --delete) FLAG_DELETE=1; shift ;;
       *) ARGS="$@"; break ;;
       esac
@@ -42,12 +44,22 @@ if [ "$SUBCOM" == "conf" ]; then
   set -- $ARGS
 
   show-help() {
-    echo 'usage: command conf [-i|--image image] [-d|--delete]'
+    echo 'usage: command conf [-i|--image image] [-l|--list] [-d|--delete] [-e|--edit]'
     exit
   }
 
   if [ "$FLAG_HELP" == "1" ]; then
     show-help
+  fi
+
+  if [ "$FLAG_LIST" == "1" ]; then
+    ls "${BASE}"
+    exit
+  fi
+
+  if [ "$FLAG_EDIT" == "1" ]; then
+    EDIT="${VISUAL:-${EDITOR:-vi}}"
+    exec "${EDIT}" "${CONF}"
   fi
 
   if [ "$FLAG_DELETE" == "1" ]; then
