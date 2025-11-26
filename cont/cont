@@ -25,6 +25,7 @@ fi
 BASE="${HOME}/.cont"
 NAME="${PWD//\//_}"
 NAME="${NAME/_/}"
+NAME="${NAME,,}"
 CONF="${BASE}/${NAME}.mk"
 
 if [ "$SUBCOM" == "conf" ]; then
