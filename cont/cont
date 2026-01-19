@@ -85,6 +85,7 @@ ex)
   ### main proc
   mkdir -p "${BASE}"
 
+  # NOTE: Mac環境でdoc内文字多いと止まるがprintf使いたくないので分ける
   cat <<EOF > "${CONF}"
 VM := ${VM:-podman}
 NAME := ${NAME}
@@ -102,18 +103,23 @@ rebuild:
 	make build
 
 run:
-	\$(VM) run -v ./:/app -v /etc/localtime:/etc/localtime:ro --rm -w /app -it --name \$(NAME) \$(IMG)
+	\$(VM) run --rm -v ./:/app -v /etc/localtime:/etc/localtime:ro -w /app -it --name \$(NAME) \$(IMG)
 
+EOF
+
+  cat <<EOF >> "${CONF}"
 ever:
-  @if \$(VM) ps -a --filter name=\$(NAME) --format "{{.Names}}" | grep -q \$(NAME); then \\
-    \$(VM) start \$(NAME); \\
-  else \\
-    \$(VM) run -v ./:/app -v /etc/localtime:/etc/localtime:ro -w /app -itd --name \$(NAME) --entrypoint bash \$(NAME); \\
-  fi
+	@if \$(VM) ps -a --filter name=\$(NAME) --format "{{.Names}}" | grep -q \$(NAME); then \\
+		\$(VM) start \$(NAME); \\
+	else \\
+		\$(VM) run -v ./:/app -v /etc/localtime:/etc/localtime:ro -w /app -itd --name \$(NAME) --entrypoint bash \$(NAME); \\
+	fi
 
 never:
 	\$(VM) run --rm -v ./:/app -v /etc/localtime:/etc/localtime:ro -w /app -itd --name \$(NAME) --entrypoint bash \$(NAME)
 
+EOF
+  cat <<EOF >> "${CONF}"
 stop:
 	\$(VM) stop \$(NAME)
 
