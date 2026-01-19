@@ -132,6 +132,15 @@ rmi:
 
 bash:
 	\$(VM) exec -it \$(NAME) bash
+
+EOF
+
+  cat <<EOF >> "${CONF}"
+#sync-time:
+#	podman machine ssh date -u -s "\$\$(date -u +'%Y-%m-%dT%H:%M:%S')"
+
+#proxy:
+#	\$(VM) exec -it \$(NAME) socat -v 'tcp4-listen:8443,fork,reuseaddr' 'tcp4:127.0.0.1:443'
 EOF
 
 exit 0
