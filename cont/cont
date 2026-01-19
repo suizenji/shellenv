@@ -112,16 +112,19 @@ ever:
 	@if \$(VM) ps -a --filter name=\$(NAME) --format "{{.Names}}" | grep -q \$(NAME); then \\
 		\$(VM) start \$(NAME); \\
 	else \\
-		\$(VM) run -v ./:/app -v /etc/localtime:/etc/localtime:ro -w /app -itd --name \$(NAME) --entrypoint bash \$(NAME); \\
+		\$(VM) run -v ./:/app -v /etc/localtime:/etc/localtime:ro -w /app -itd --name \$(NAME) --entrypoint bash \$(IMG); \\
 	fi
 
 never:
-	\$(VM) run --rm -v ./:/app -v /etc/localtime:/etc/localtime:ro -w /app -itd --name \$(NAME) --entrypoint bash \$(NAME)
+	\$(VM) run --rm -v ./:/app -v /etc/localtime:/etc/localtime:ro -w /app -itd --name \$(NAME) --entrypoint bash \$(IMG)
 
 EOF
   cat <<EOF >> "${CONF}"
 stop:
 	\$(VM) stop \$(NAME)
+
+rm:
+	\$(VM) rm \$(NAME)
 
 rmi:
 	\$(VM) rmi \$(NAME)
