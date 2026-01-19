@@ -43,7 +43,7 @@ else
 FNAME := $(MAKEFILE_LIST)
 endif
 
-.PRECIOUS: %.key %.csr
+.PRECIOUS: %.key %.csr %.crt
 
 # show usage.
 usage:
@@ -61,7 +61,7 @@ usage:
 	@echo '	$(CMD) link'
 	@echo ''
 	@echo 'tips:'
-	@echo '	curl --cacert root.crt https://localhost'
+	@echo '	curl --insecure --cacert root.crt https://localhost'
 	@echo '	curl telnet://localhost:8080'
 	@echo '	openssl s_client localhost:443'
 	@echo ''
@@ -158,7 +158,7 @@ CRT_EXT = $(if $(wildcard $*.ext),-extfile $*.ext,)
 # https://racchai.hatenablog.com/entry/2016/04/14/173000
 # run a ssl server
 %.server: %.crt
-	socat -v -v -v openssl-listen:$(SRV_PORT),verify=0,cert=$<,key=$*.key,fork,reuseaddr $(BI_ADDR2)
+	socat -v -v -v openssl-listen:$(SRV_PORT),verify=0,cert=$<,key=$*.key,fork,reuseaddr "$(BI_ADDR2)"
 
 # socat proxy(another ver)
 # https://qiita.com/cuzic/items/672c66e8ccdfba067166
