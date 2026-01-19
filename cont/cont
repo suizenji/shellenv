@@ -98,9 +98,10 @@ build:
 	\$(VM) build . -t \$(NAME)
 
 rebuild:
-	-make stop
-	-make rmi
-	make build
+	-cont stop
+	-cont rm
+	-cont rmi
+	cont build
 
 run:
 	\$(VM) run --rm -v ./:/app -v /etc/localtime:/etc/localtime:ro -w /app -it --name \$(NAME) \$(IMG)
