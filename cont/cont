@@ -38,7 +38,7 @@ if [ "$SUBCOM" == "conf" ]; then
       -l | --list) FLAG_LIST=1; shift ;;
       -d | --delete) FLAG_DELETE=1; shift ;;
       -e | --edit) FLAG_EDIT=1; shift ;;
-      -o | --overwrite) FLAG_OW=1; shift ;;
+      -f | --force) FLAG_OW=1; shift ;;
       *) ARGS="$@"; break ;;
       esac
     done
@@ -53,9 +53,9 @@ if [ "$SUBCOM" == "conf" ]; then
     -l|--list
     -d|--delete
     -e|--edit
-    -o|--overwrite
+    -f|--force
 ex)
-    cont conf -o -i node:latest --vm podman'
+    cont conf -f -i node:latest --vm podman'
   }
 
   if [ "$FLAG_HELP" == "1" ]; then
@@ -83,7 +83,7 @@ ex)
 
   if [ -e "${CONF}" ] && [ "$FLAG_OW" != "1" ]; then
     echo "Error: Configuration file already exists: ${CONF}"
-    echo "Use -o or --overwrite option to overwrite it."
+    echo "Use -f or --force option to overwrite it."
     exit 1
   fi
 
