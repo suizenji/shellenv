@@ -87,7 +87,8 @@ ex)
     exit 1
   fi
 
-  # NOTE: Mac環境でdoc内文字多いと止まるがprintf使いたくないので分ける
+  # NOTE: 512Bを超えると書き込めない環境を確認した。
+  # 一時ファイルを利用せずメモリで完結するよう分割する。
   cat <<EOF > "${CONF}"
 VM := ${VM:-podman}
 NAME := ${NAME}

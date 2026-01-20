@@ -4,7 +4,10 @@ install: ../bin/cont
 	cp $< $@
 
 test:
-	./cont conf -o
+	-./cont conf -d
+	./cont conf
+	! ./cont conf
+	./cont conf -f
 	./cont build
 	./cont never stop never ever stop ever
 	./cont rebuild rmi
