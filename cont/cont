@@ -78,12 +78,14 @@ ex)
     exit
   fi
 
-  if [ "$FLAG_OW" == "1" ]; then
-    rm -rf "${CONF}"
-  fi
-
   ### main proc
   mkdir -p "${BASE}"
+
+  if [ -e "${CONF}" ] && [ "$FLAG_OW" != "1" ]; then
+    echo "Error: Configuration file already exists: ${CONF}"
+    echo "Use -o or --overwrite option to overwrite it."
+    exit 1
+  fi
 
   # NOTE: Mac環境でdoc内文字多いと止まるがprintf使いたくないので分ける
   cat <<EOF > "${CONF}"
