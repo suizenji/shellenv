@@ -93,6 +93,8 @@ ex)
 VM := ${VM:-podman}
 NAME := ${NAME}
 IMG := ${IMG:-$NAME}
+PORT :=
+TIME := -v /etc/localtime:/etc/localtime:ro
 
 all:
 	@cat "$CONF"
@@ -107,7 +109,7 @@ rebuild:
 	cont build
 
 run:
-	\$(VM) run --rm -v ./:/app -v /etc/localtime:/etc/localtime:ro -w /app -it --name \$(NAME) \$(IMG)
+	\$(VM) run --rm -v ./:/app \$(PORT) \$(TIME) -w /app -it --name \$(NAME) \$(IMG)
 
 EOF
 
@@ -116,11 +118,11 @@ ever:
 	@if \$(VM) ps -a --filter name=\$(NAME) --format "{{.Names}}" | grep -q \$(NAME); then \\
 		\$(VM) start \$(NAME); \\
 	else \\
-		\$(VM) run -v ./:/app -v /etc/localtime:/etc/localtime:ro -w /app -itd --name \$(NAME) --entrypoint bash \$(IMG); \\
+		\$(VM) run -v ./:/app \$(PORT) \$(TIME) -w /app -itd --name \$(NAME) --entrypoint bash \$(IMG); \\
 	fi
 
 never:
-	\$(VM) run --rm -v ./:/app -v /etc/localtime:/etc/localtime:ro -w /app -itd --name \$(NAME) --entrypoint bash \$(IMG)
+	\$(VM) run --rm -v ./:/app \$(PORT) \$(TIME) -w /app -itd --name \$(NAME) --entrypoint bash \$(IMG)
 
 EOF
   cat <<EOF >> "${CONF}"
