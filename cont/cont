@@ -1,5 +1,7 @@
 #!/bin/sh
 
+CMD_NAME=$(basename "$0")
+
 parse() {
   while [ "$#" -gt 0 ]; do
     case "$1" in
@@ -11,12 +13,8 @@ parse() {
 parse "$@"
 set -- $ARGS
 
-show_help() {
-  echo 'usage: command [xxx]'
-}
-
 if [ "${FLAG_HELP}" = "1" ]; then
-  show_help >&2
+  echo "Usage: ${CMD_NAME} [opts]" >&2
   exit 1
 fi
 
@@ -27,7 +25,8 @@ NAME=$(echo "${NAME}" | tr '[:upper:]' '[:lower:]')
 CONF="${BASE}/${NAME}.mk"
 
 if [ ! -e "${CONF}" ]; then
-  show_help >&2
+  echo "Error: Configuration file does not exist: ${CONF}" >&2
+  echo "Create it with: ${CMD_NAME}-conf new" >&2
   exit 1
 fi
 

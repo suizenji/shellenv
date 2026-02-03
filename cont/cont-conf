@@ -93,7 +93,7 @@ options:
   -d|--dry-run    : dry run (output to stdout)
   --full          : include option targets
   -i|--image image: set image
-  -v|--vm vmachine: set virtual machine (default: podman > docker)
+  -v|--vm vmachine: set virtual machine (default: podman)
   -p|--port port  : set port mapping (not implemented yet)
   -n|--network net: set network options (not implemented yet)" >&2
     exit 1
