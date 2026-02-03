@@ -2,13 +2,13 @@
 
 CMD_NAME=$(basename "$0")
 
-show-help () {
+show_help() {
   echo "Usage: ${CMD_NAME} [ls|new|delete|edit]"
 }
 
 # デフォルトの挙動いいのあれば採用したい。
 if [ "$#" -eq 0 ]; then
-  show-help >&2
+  show_help >&2
   exit 1
 fi
 
@@ -33,7 +33,7 @@ parse "$@"
 set -- $ARGS
 
 if [ "${FLAG_HELP}" = "1" ]; then
-  show-help >&2
+  show_help >&2
   exit 1
 fi
 
@@ -182,7 +182,5 @@ All arguments except -h/--help are passed to ls command." >&2
   fi
 
   # lsコマンドに引数を渡して実行
-  ls "$@" "${BASE}"
-
-  exit 0
+  exec ls "$@" "${BASE}"
 fi
