@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# TODO: -flみたいな場合
+# TODO: -f '-a b -c d'みたいな場合
+
 CMD_NAME=$(basename "$0")
 
 parse() {

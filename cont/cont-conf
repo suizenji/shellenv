@@ -56,6 +56,8 @@ if [ "${SUBCOM}" = "new" ]; then
       -d | --dry-run) FLAG_DRY_RUN=1; shift; ARGS="$@"; ;;
       -i | --image) IMG="$2"; shift 2; ARGS="$@"; ;;
       -v | --vm) VM="$2"; shift 2; ARGS="$@"; ;;
+      -p | --port) FLAG_PORT=1; PORT="$2"; shift 2; ARGS="$@"; ;;
+      -n | --network) FLAG_NETWORK=1; NW="$2"; shift 2; ARGS="$@"; ;;
       *)
         echo "Unknown option: $1" >&2
         exit 1
@@ -66,6 +68,18 @@ if [ "${SUBCOM}" = "new" ]; then
   parse "$@"
   set -- $ARGS
 
+  # TODO
+  if [ "${FLAG_PORT}" = "1" ]; then
+    echo "Error: -p|--port option is not implemented yet" >&2
+    exit 1
+  fi
+
+  # TODO
+  if [ "${FLAG_NETWORK}" = "1" ]; then
+    echo "Error: -n|--network option is not implemented yet" >&2
+    exit 1
+  fi
+
   if [ "${FLAG_HELP}" = "1" ]; then
     echo "Usage: ${CMD_NAME} [opts]
 options:
@@ -73,7 +87,9 @@ options:
   -f|--force      : force write
   -d|--dry-run    : dry run (output to stdout)
   -i|--image image: set image
-  -v|--vm vmachine: set virtual machine (default: podman > docker)" >&2
+  -v|--vm vmachine: set virtual machine (default: podman > docker)
+  -p|--port port  : set port mapping (not implemented yet)
+  -n|--network net: set network options (not implemented yet)" >&2
     exit 1
   fi
 
@@ -98,8 +114,11 @@ options:
 VM := ${VM:-podman}
 NAME := ${NAME}
 IMG := ${IMG:-"${NAME}"}
-PORT :=
-TIME := -v /etc/localtime:/etc/localtime:ro
+
+VOL := -v ./:/app -v /etc/localtime:/etc/localtime:ro
+#PORT := -p 8080:80 -p 3000:3000
+#NW := --network mynet --network-alias mynet.com
+VM_ARGS := \$(VOL) \$(PORT) \$(NW) -w /app --name \$(NAME)
 
 all:
 	@cat "$CONF"
@@ -114,20 +133,20 @@ rebuild:
 	cont build
 
 run:
-	\$(VM) run --rm -v ./:/app \$(PORT) \$(TIME) -w /app -it --name \$(NAME) \$(IMG)
+	\$(VM) run --rm \$(VM_ARGS) -it \$(IMG)
 
 EOF
 
   cat <<EOF >> "${OUTPUT}"
 ever:
-	@if \$(VM) ps -a --filter name=\$(NAME) --format "{{.Names}}" | grep -q \$(NAME); then \\
+	if \$(VM) ps -a --filter name=\$(NAME) --format "{{.Names}}" | grep -q \$(NAME); then \\
 		\$(VM) start \$(NAME); \\
 	else \\
-		\$(VM) run -v ./:/app \$(PORT) \$(TIME) -w /app -itd --name \$(NAME) --entrypoint bash \$(IMG); \\
+		\$(VM) run \$(VM_ARGS) -itd \$(IMG) bash; \\
 	fi
 
 never:
-	\$(VM) run --rm -v ./:/app \$(PORT) \$(TIME) -w /app -itd --name \$(NAME) --entrypoint bash \$(IMG)
+	\$(VM) run --rm \$(VM_ARGS) -itd \$(IMG) bash
 
 EOF
   cat <<EOF >> "${OUTPUT}"
