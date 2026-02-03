@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+
+CMD_NAME=$(basename "$0")
+
+show-help () {
+  echo "Usage: ${CMD_NAME} [ls|new|delete|edit]"
+}
+
+# デフォルトの挙動いいのあれば採用したい。
+if [ "$#" -eq 0 ]; then
+  show-help >&2
+  exit 1
+fi
+
+### サブコマンドを設定
+parse() {
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+    --) shift; ARGS="$@"; return; break;;
+    -h | --help) FLAG_HELP=1; shift; ARGS="$@"; break ;;
+    ls) SUBCOM=ls; shift; ARGS="$@"; break ;;
+    new) SUBCOM=new; shift; ARGS="$@"; break ;;
+    delete) SUBCOM=delete; shift; ARGS="$@"; break ;;
+    edit) SUBCOM=edit; shift; ARGS="$@"; break ;;
+    *)
+      echo "Unknown option: $1" >&2
+      exit 1
+    esac
+  done
+}
+parse "$@"
+set -- $ARGS
+
+if [ "$FLAG_HELP" == "1" ]; then
+  show-help >&2
+  exit 1
+fi
+
+### サブコマンド：new
+if [ "$SUBCOM" == new ]; then
+  parse() {
+    while [ "$#" -gt 0 ]; do
+      case "$1" in
+      --) shift; ARGS="$@"; return; break;;
+      -h | --help) FLAG_HELP=1; shift; ARGS="$@"; break ;;
+      -f | --force) FLAG_FORCE=1; shift; ARGS="$@"; ;;
+      -i | --image) IMG="$2"; shift 2; ARGS="$@"; ;;
+      -v | --vm) VM="$2"; shift 2; ARGS="$@"; ;;
+      *)
+        echo "Unknown option: $1" >&2
+        exit 1
+      esac
+    done
+  }
+  parse "$@"
+  set -- $ARGS
+
+  if [ "$FLAG_HELP" == "1" ]; then
+    echo "Usage: ${CMD_NAME} [opts]
+options:
+  -h              : show help
+  -f|--force      : force write
+  -i|--image image: set image
+  -v|--vm vmachine: set virtual machine (default: podman > docker)" >&2
+    exit 1
+  fi
+
+  exit 0
+fi
