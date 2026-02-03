@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 
+CMD_NAME=$(basename "$0")
+
 parse() {
   while [ "$#" -gt 0 ]; do
     echo "[\$#] $#"
     echo "[\$@] $@"
     case "$1" in
-    --) shift; ARGS="$@"; return; break;;
+    --) shift; ARGS="$@"; break;;
     -h | --help) FLAG_HELP=1; shift; ARGS="$@"; break ;;
     -l | --list) FLAG_LIST=1; shift; ARGS="$@"; ;;
     -v | --verbose) FLAG_VERB=1; shift; ARGS="$@"; ;;
