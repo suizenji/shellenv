@@ -209,6 +209,7 @@ if [ "${SUBCOM}" = "rm" ]; then
       case "$1" in
       --) shift; ARGS="$@"; break ;;
       -h | --help) FLAG_HELP=1; shift; ARGS="$@"; break ;;
+      -f | --force) FLAG_FORCE=1; shift; ARGS="$@"; ;;
       *)
         echo "Unknown option: $1" >&2
         exit 1
@@ -220,14 +221,28 @@ if [ "${SUBCOM}" = "rm" ]; then
   set -- $ARGS
 
   if [ "${FLAG_HELP}" = "1" ]; then
-    echo "Usage: ${CMD_NAME} rm
-Delete configuration file: ${CONF}" >&2
+    echo "Usage: ${CMD_NAME} rm [-f|--force]
+Delete configuration file: ${CONF}
+  -f|--force: delete without confirmation" >&2
     exit 1
   fi
 
   if [ ! -e "${CONF}" ]; then
     echo "Error: Configuration file does not exist: ${CONF}" >&2
     exit 1
+  fi
+
+  if [ "${FLAG_FORCE}" != "1" ]; then
+    printf "Delete configuration file: ${CONF}? [y/N] "
+    read -r answer
+    case "${answer}" in
+    [yY]|[yY][eE][sS])
+      ;;
+    *)
+      echo "Cancelled."
+      exit 0
+      ;;
+    esac
   fi
 
   rm -f "${CONF}"
