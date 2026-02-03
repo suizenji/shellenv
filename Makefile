@@ -5,7 +5,7 @@ install:
 	make install -C markdown
 	make install -C tsapp
 	make install -C cont
-	cd pockey && make -f Installer.mk install
+	make install -C pockey -f Installer.mk
 	@echo ''
 	@echo '>>> next'
 	@echo export PATH=\"$(shell pwd)/bin:\$$PATH\"
