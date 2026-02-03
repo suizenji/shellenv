@@ -6,7 +6,7 @@
 CMD_NAME=$(basename "$0")
 
 show_help() {
-  echo "Usage: ${CMD_NAME} [ls|new|rm|edit]"
+  echo "Usage: ${CMD_NAME} [ls|new|rm|edit|show]"
 }
 
 # デフォルトの挙動いいのあれば採用したい。
@@ -25,6 +25,7 @@ parse() {
     new) SUBCOM=new; shift; ARGS="$@"; break ;;
     rm) SUBCOM=rm; shift; ARGS="$@"; break ;;
     edit) SUBCOM=edit; shift; ARGS="$@"; break ;;
+    show) SUBCOM=show; shift; ARGS="$@"; break ;;
     *)
       echo "Unknown option: $1" >&2
       exit 1
@@ -293,4 +294,38 @@ Edit configuration file
 
   EDIT="${VISUAL:-${EDITOR:-vi}}"
   exec "${EDIT}" "${TARGET}"
+fi
+
+### サブコマンド：show
+if [ "${SUBCOM}" = "show" ]; then
+  parse() {
+    while [ "$#" -gt 0 ]; do
+      case "$1" in
+      --) shift; ARGS="$@"; break ;;
+      -h | --help) FLAG_HELP=1; shift; ARGS="$@"; break ;;
+      *) ARGS="$@"; break ;;
+      esac
+    done
+  }
+  parse "$@"
+  set -- $ARGS
+
+  if [ "${FLAG_HELP}" = "1" ]; then
+    echo "Usage: ${CMD_NAME} show [file]
+Show configuration file content
+  file: configuration file name (default: auto-generated from current directory)" >&2
+    exit 1
+  fi
+
+  if [ "$#" -eq 0 ]; then
+    set -- "${CONF}"
+  fi
+
+  TARGET="${BASE}/$(basename "$1")"
+  if [ ! -e "${TARGET}" ]; then
+    echo "Error: Configuration file does not exist: ${TARGET}" >&2
+    exit 1
+  fi
+
+  exec cat "${TARGET}"
 fi
