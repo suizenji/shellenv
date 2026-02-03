@@ -1,13 +1,13 @@
-install: ../bin/cont
+install: ../bin/cont ../bin/cont-conf
 
 ../bin/cont: cont
 	cp $< $@
+../bin/cont-conf: cont-conf
+	cp $< $@
 
 test:
-	-./cont conf -d
-	./cont conf
-	! ./cont conf
-	./cont conf -f
+	-./cont-conf rm -f
+	./cont-conf new
 	./cont build
 	./cont never stop never ever stop ever
 	./cont rebuild rmi

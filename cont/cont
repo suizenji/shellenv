@@ -1,10 +1,9 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 parse() {
   while [ "$#" -gt 0 ]; do
     case "$1" in
     -h | --help) FLAG_HELP=1; break ;;
-    conf) SUBCOM=conf; shift; ARGS="$@"; break ;;
     *) ARGS="$@"; break ;;
     esac
   done
@@ -12,148 +11,24 @@ parse() {
 parse "$@"
 set -- $ARGS
 
-show-help() {
-  echo 'usage: command [conf|xxx]'
+show_help() {
+  echo 'usage: command [xxx]'
 }
 
-if [ "$FLAG_HELP" == "1" ]; then
-  show-help
-  exit
+if [ "${FLAG_HELP}" = "1" ]; then
+  show_help >&2
+  exit 1
 fi
 
 ### main proc
 BASE="${HOME}/.cont"
-NAME="${PWD//\//_}"
-NAME="${NAME/_/}"
-NAME="${NAME,,}"
+NAME=$(echo "${PWD:-$(pwd)}" | tr '/' '_' | sed 's/^_//')
+NAME=$(echo "${NAME}" | tr '[:upper:]' '[:lower:]')
 CONF="${BASE}/${NAME}.mk"
 
-if [ "$SUBCOM" == "conf" ]; then
-  parse() {
-    while [ "$#" -gt 0 ]; do
-      case "$1" in
-      -h | --help) FLAG_HELP=1; shift ;;
-      -i | --image) IMG="$2"; shift 2 ;;
-      -v | --vm) VM="$2"; shift 2 ;;
-      -l | --list) FLAG_LIST=1; shift ;;
-      -d | --delete) FLAG_DELETE=1; shift ;;
-      -e | --edit) FLAG_EDIT=1; shift ;;
-      -f | --force) FLAG_OW=1; shift ;;
-      *) ARGS="$@"; break ;;
-      esac
-    done
-  }
-  parse "$@"
-  set -- $ARGS
-
-  show-help() {
-    echo 'usage: command conf [opt]
-    -i|--image image
-    -v|--vm vm (default:podman ex:docker)
-    -l|--list
-    -d|--delete
-    -e|--edit
-    -f|--force
-ex)
-    cont conf -f -i node:latest --vm podman'
-  }
-
-  if [ "$FLAG_HELP" == "1" ]; then
-    show-help
-    exit
-  fi
-
-  if [ "$FLAG_LIST" == "1" ]; then
-    ls "${BASE}"
-    exit
-  fi
-
-  if [ "$FLAG_EDIT" == "1" ]; then
-    EDIT="${VISUAL:-${EDITOR:-vi}}"
-    exec "${EDIT}" "${CONF}"
-  fi
-
-  if [ "$FLAG_DELETE" == "1" ]; then
-    rm -rf "${CONF}"
-    exit
-  fi
-
-  ### main proc
-  mkdir -p "${BASE}"
-
-  if [ -e "${CONF}" ] && [ "$FLAG_OW" != "1" ]; then
-    echo "Error: Configuration file already exists: ${CONF}"
-    echo "Use -f or --force option to overwrite it."
-    exit 1
-  fi
-
-  # NOTE: 512Bを超えると書き込めない環境を確認した。
-  # 一時ファイルを利用せずメモリで完結するよう分割する。
-  cat <<EOF > "${CONF}"
-VM := ${VM:-podman}
-NAME := ${NAME}
-IMG := ${IMG:-$NAME}
-PORT :=
-TIME := -v /etc/localtime:/etc/localtime:ro
-
-all:
-	@cat "$CONF"
-
-build:
-	\$(VM) build . -t \$(NAME)
-
-rebuild:
-	-cont stop
-	-cont rm
-	-cont rmi
-	cont build
-
-run:
-	\$(VM) run --rm -v ./:/app \$(PORT) \$(TIME) -w /app -it --name \$(NAME) \$(IMG)
-
-EOF
-
-  cat <<EOF >> "${CONF}"
-ever:
-	@if \$(VM) ps -a --filter name=\$(NAME) --format "{{.Names}}" | grep -q \$(NAME); then \\
-		\$(VM) start \$(NAME); \\
-	else \\
-		\$(VM) run -v ./:/app \$(PORT) \$(TIME) -w /app -itd --name \$(NAME) --entrypoint bash \$(IMG); \\
-	fi
-
-never:
-	\$(VM) run --rm -v ./:/app \$(PORT) \$(TIME) -w /app -itd --name \$(NAME) --entrypoint bash \$(IMG)
-
-EOF
-  cat <<EOF >> "${CONF}"
-stop:
-	\$(VM) stop \$(NAME)
-
-rm:
-	\$(VM) rm \$(NAME)
-
-rmi:
-	\$(VM) rmi \$(NAME)
-
-bash:
-	\$(VM) exec -it \$(NAME) bash
-
-EOF
-
-  cat <<EOF >> "${CONF}"
-#sync-time:
-#	podman machine ssh date -u -s "\$\$(date -u +'%Y-%m-%dT%H:%M:%S')"
-
-#proxy:
-#	\$(VM) exec -it \$(NAME) socat -v 'tcp4-listen:8443,fork,reuseaddr' 'tcp4:127.0.0.1:443'
-EOF
-
-exit 0
-fi
-
 if [ ! -e "${CONF}" ]; then
-  show-help
-  exit
+  show_help >&2
+  exit 1
 fi
 
 make -f "${CONF}" "$@"
