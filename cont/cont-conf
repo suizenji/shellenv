@@ -36,6 +36,15 @@ if [ "$FLAG_HELP" == "1" ]; then
   exit 1
 fi
 
+# サブコマンドの準備
+BASE="${HOME}/.cont"
+NAME="${PWD//\//_}"
+NAME="${NAME/_/}"
+NAME="${NAME,,}"
+CONF="${BASE}/${NAME}.mk"
+
+mkdir -p "${BASE}"
+
 ### サブコマンド：new
 if [ "$SUBCOM" == new ]; then
   parse() {
@@ -44,6 +53,7 @@ if [ "$SUBCOM" == new ]; then
       --) shift; ARGS="$@"; return; break;;
       -h | --help) FLAG_HELP=1; shift; ARGS="$@"; break ;;
       -f | --force) FLAG_FORCE=1; shift; ARGS="$@"; ;;
+      -d | --dry-run) FLAG_DRY_RUN=1; shift; ARGS="$@"; ;;
       -i | --image) IMG="$2"; shift 2; ARGS="$@"; ;;
       -v | --vm) VM="$2"; shift 2; ARGS="$@"; ;;
       *)
@@ -60,10 +70,87 @@ if [ "$SUBCOM" == new ]; then
 options:
   -h              : show help
   -f|--force      : force write
+  -d|--dry-run    : dry run (output to stdout)
   -i|--image image: set image
   -v|--vm vmachine: set virtual machine (default: podman > docker)" >&2
     exit 1
   fi
+
+  if [ "$FLAG_DRY_RUN" != "1" ]; then
+    if [ -e "${CONF}" ] && [ "$FLAG_FORCE" != "1" ]; then
+      echo "Error: Configuration file already exists: ${CONF}" >&2
+      echo "Use -f or --force option to overwrite it." >&2
+      exit 1
+    fi
+  fi
+
+  # 出力先を決定（dry-runの場合は標準出力、そうでない場合はファイル）
+  if [ "$FLAG_DRY_RUN" == "1" ]; then
+    OUTPUT="/dev/stdout"
+  else
+    OUTPUT="${CONF}"
+  fi
+
+  # NOTE: 512Bを超えると書き込めない環境を確認している。
+  # 一時ファイルを利用せずメモリで完結するよう分割する。
+  cat <<EOF > "${OUTPUT}"
+VM := ${VM:-podman}
+NAME := ${NAME}
+IMG := ${IMG:-$NAME}
+PORT :=
+TIME := -v /etc/localtime:/etc/localtime:ro
+
+all:
+	@cat "$CONF"
+
+build:
+	\$(VM) build . -t \$(NAME)
+
+rebuild:
+	-cont stop
+	-cont rm
+	-cont rmi
+	cont build
+
+run:
+	\$(VM) run --rm -v ./:/app \$(PORT) \$(TIME) -w /app -it --name \$(NAME) \$(IMG)
+
+EOF
+
+  cat <<EOF >> "${OUTPUT}"
+ever:
+	@if \$(VM) ps -a --filter name=\$(NAME) --format "{{.Names}}" | grep -q \$(NAME); then \\
+		\$(VM) start \$(NAME); \\
+	else \\
+		\$(VM) run -v ./:/app \$(PORT) \$(TIME) -w /app -itd --name \$(NAME) --entrypoint bash \$(IMG); \\
+	fi
+
+never:
+	\$(VM) run --rm -v ./:/app \$(PORT) \$(TIME) -w /app -itd --name \$(NAME) --entrypoint bash \$(IMG)
+
+EOF
+  cat <<EOF >> "${OUTPUT}"
+stop:
+	\$(VM) stop \$(NAME)
+
+rm:
+	\$(VM) rm \$(NAME)
+
+rmi:
+	\$(VM) rmi \$(NAME)
+
+bash:
+	\$(VM) exec -it \$(NAME) bash
+
+EOF
+
+  cat <<EOF >> "${OUTPUT}"
+#sync-time:
+#	podman machine ssh date -u -s "\$\$(date -u +'%Y-%m-%dT%H:%M:%S')"
+
+#proxy:
+#	\$(VM) exec -it \$(NAME) socat -v 'tcp4-listen:8443,fork,reuseaddr' 'tcp4:127.0.0.1:443'
+EOF
 
   exit 0
 fi
