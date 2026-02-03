@@ -54,6 +54,7 @@ if [ "${SUBCOM}" = "new" ]; then
       -h | --help) FLAG_HELP=1; shift; ARGS="$@"; break ;;
       -f | --force) FLAG_FORCE=1; shift; ARGS="$@"; ;;
       -d | --dry-run) FLAG_DRY_RUN=1; shift; ARGS="$@"; ;;
+      --full) FLAG_FULL=1; shift; ARGS="$@"; ;;
       -i | --image) IMG="$2"; shift 2; ARGS="$@"; ;;
       -v | --vm) VM="$2"; shift 2; ARGS="$@"; ;;
       -p | --port) FLAG_PORT=1; PORT="$2"; shift 2; ARGS="$@"; ;;
@@ -81,11 +82,12 @@ if [ "${SUBCOM}" = "new" ]; then
   fi
 
   if [ "${FLAG_HELP}" = "1" ]; then
-    echo "Usage: ${CMD_NAME} [opts]
+    echo "Usage: ${CMD_NAME} new [opts]
 options:
   -h              : show help
   -f|--force      : force write
   -d|--dry-run    : dry run (output to stdout)
+  --full          : include option targets
   -i|--image image: set image
   -v|--vm vmachine: set virtual machine (default: podman > docker)
   -p|--port port  : set port mapping (not implemented yet)
@@ -125,52 +127,48 @@ all:
 
 build:
 	\$(VM) build . -t \$(NAME)
-
 rebuild:
 	-cont stop
 	-cont rm
 	-cont rmi
 	cont build
-
-run:
-	\$(VM) run --rm \$(VM_ARGS) -it \$(IMG)
-
 EOF
 
   cat <<EOF >> "${OUTPUT}"
+
+run:
+	\$(VM) run --rm \$(VM_ARGS) -it \$(IMG)
 ever:
 	if \$(VM) ps -a --filter name=\$(NAME) --format "{{.Names}}" | grep -q \$(NAME); then \\
 		\$(VM) start \$(NAME); \\
 	else \\
 		\$(VM) run \$(VM_ARGS) -itd \$(IMG) bash; \\
 	fi
-
 never:
 	\$(VM) run --rm \$(VM_ARGS) -itd \$(IMG) bash
-
 EOF
   cat <<EOF >> "${OUTPUT}"
+
 stop:
 	\$(VM) stop \$(NAME)
-
 rm:
 	\$(VM) rm \$(NAME)
-
 rmi:
 	\$(VM) rmi \$(NAME)
-
 bash:
 	\$(VM) exec -it \$(NAME) bash
-
 EOF
 
-  cat <<EOF >> "${OUTPUT}"
+  if [ "${FLAG_FULL}" = "1" ]; then
+    cat <<EOF >> "${OUTPUT}"
+
 #sync-time:
 #	podman machine ssh date -u -s "\$\$(date -u +'%Y-%m-%dT%H:%M:%S')"
 
 #proxy:
 #	\$(VM) exec -it \$(NAME) socat -v 'tcp4-listen:8443,fork,reuseaddr' 'tcp4:127.0.0.1:443'
 EOF
+  fi
 
   exit 0
 fi
