@@ -155,3 +155,34 @@ EOF
 
   exit 0
 fi
+
+### サブコマンド：ls (list)
+if [ "${SUBCOM}" = "ls" ]; then
+  parse() {
+    while [ "$#" -gt 0 ]; do
+      case "$1" in
+      --) shift; ARGS="$@"; break ;;
+      -h | --help) FLAG_HELP=1; shift; ARGS="$@"; break ;;
+      *)
+        # ヘルプ以外の引数はlsコマンドに流す
+        ARGS="$@"
+        break
+        ;;
+      esac
+    done
+  }
+  parse "$@"
+  set -- $ARGS
+
+  if [ "${FLAG_HELP}" = "1" ]; then
+    echo "Usage: ${CMD_NAME} ls [ls-options]
+List configuration files in ${BASE}
+All arguments except -h/--help are passed to ls command." >&2
+    exit 1
+  fi
+
+  # lsコマンドに引数を渡して実行
+  ls "$@" "${BASE}"
+
+  exit 0
+fi
