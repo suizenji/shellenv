@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# TODO: test code. exit codeみる？
+# TODO: testはdockerにてPOSIXも見る？
+
 CMD_NAME=$(basename "$0")
 
 show_help() {
@@ -39,7 +42,7 @@ fi
 
 # サブコマンドの準備
 BASE="${HOME}/.cont"
-NAME=$(echo "${PWD}" | tr '/' '_' | sed 's/^_//')
+NAME=$(echo "${PWD:-$(pwd)}" | tr '/' '_' | sed 's/^_//')
 NAME=$(echo "${NAME}" | tr '[:upper:]' '[:lower:]')
 CONF="${BASE}/${NAME}.mk"
 
@@ -210,10 +213,7 @@ if [ "${SUBCOM}" = "rm" ]; then
       --) shift; ARGS="$@"; break ;;
       -h | --help) FLAG_HELP=1; shift; ARGS="$@"; break ;;
       -f | --force) FLAG_FORCE=1; shift; ARGS="$@"; ;;
-      *)
-        echo "Unknown option: $1" >&2
-        exit 1
-        ;;
+      *) ARGS="$@"; break ;;
       esac
     done
   }
@@ -221,31 +221,41 @@ if [ "${SUBCOM}" = "rm" ]; then
   set -- $ARGS
 
   if [ "${FLAG_HELP}" = "1" ]; then
-    echo "Usage: ${CMD_NAME} rm [-f|--force]
-Delete configuration file: ${CONF}
+    echo "Usage: ${CMD_NAME} rm [-f|--force] [file...]
+Delete configuration file(s)
   -f|--force: delete without confirmation" >&2
     exit 1
   fi
 
-  if [ ! -e "${CONF}" ]; then
-    echo "Error: Configuration file does not exist: ${CONF}" >&2
-    exit 1
+  if [ "$#" -eq 0 ]; then
+    set -- "${CONF}"
   fi
 
-  if [ "${FLAG_FORCE}" != "1" ]; then
-    printf "Delete configuration file: ${CONF}? [y/N] "
-    read -r answer
-    case "${answer}" in
-    [yY]|[yY][eE][sS])
-      ;;
-    *)
-      echo "Cancelled."
-      exit 0
-      ;;
-    esac
-  fi
-
-  rm -f "${CONF}"
-  echo "Deleted: ${CONF}"
-  exit 0
+  ERROR=0
+  for file in "$@"; do
+    TARGET="${BASE}/$(basename "${file}")"
+    if [ ! -e "${TARGET}" ]; then
+      echo "Error: Configuration file does not exist: ${TARGET}" >&2
+      ERROR=1
+      continue
+    fi
+    if [ "${FLAG_FORCE}" != "1" ]; then
+      printf "Delete configuration file: ${TARGET}? [y/N] "
+      read -r answer
+      case "${answer}" in
+      [yY]|[yY][eE][sS])
+        ;;
+      *)
+        continue
+        ;;
+      esac
+    fi
+    if rm -f "${TARGET}"; then
+      echo "Deleted: ${TARGET}"
+    else
+      echo "Error: Failed to delete: ${TARGET}" >&2
+      ERROR=1
+    fi
+  done
+  exit ${ERROR}
 fi
