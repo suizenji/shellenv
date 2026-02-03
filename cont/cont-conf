@@ -3,7 +3,7 @@
 CMD_NAME=$(basename "$0")
 
 show_help() {
-  echo "Usage: ${CMD_NAME} [ls|new|delete|edit]"
+  echo "Usage: ${CMD_NAME} [ls|new|rm|edit]"
 }
 
 # デフォルトの挙動いいのあれば採用したい。
@@ -20,7 +20,7 @@ parse() {
     -h | --help) FLAG_HELP=1; shift; ARGS="$@"; break ;;
     ls) SUBCOM=ls; shift; ARGS="$@"; break ;;
     new) SUBCOM=new; shift; ARGS="$@"; break ;;
-    delete) SUBCOM=delete; shift; ARGS="$@"; break ;;
+    rm) SUBCOM=rm; shift; ARGS="$@"; break ;;
     edit) SUBCOM=edit; shift; ARGS="$@"; break ;;
     *)
       echo "Unknown option: $1" >&2
@@ -200,4 +200,37 @@ All arguments except -h/--help are passed to ls command." >&2
 
   # lsコマンドに引数を渡して実行
   exec ls "$@" "${BASE}"
+fi
+
+### サブコマンド：rm
+if [ "${SUBCOM}" = "rm" ]; then
+  parse() {
+    while [ "$#" -gt 0 ]; do
+      case "$1" in
+      --) shift; ARGS="$@"; break ;;
+      -h | --help) FLAG_HELP=1; shift; ARGS="$@"; break ;;
+      *)
+        echo "Unknown option: $1" >&2
+        exit 1
+        ;;
+      esac
+    done
+  }
+  parse "$@"
+  set -- $ARGS
+
+  if [ "${FLAG_HELP}" = "1" ]; then
+    echo "Usage: ${CMD_NAME} rm
+Delete configuration file: ${CONF}" >&2
+    exit 1
+  fi
+
+  if [ ! -e "${CONF}" ]; then
+    echo "Error: Configuration file does not exist: ${CONF}" >&2
+    exit 1
+  fi
+
+  rm -f "${CONF}"
+  echo "Deleted: ${CONF}"
+  exit 0
 fi
