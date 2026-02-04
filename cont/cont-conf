@@ -6,7 +6,7 @@
 CMD_NAME=$(basename "$0")
 
 show_help() {
-  echo "Usage: ${CMD_NAME} [ls|new|rm|edit|show]"
+  echo "Usage: ${CMD_NAME} [ls|new|rm|edit|show|env]"
 }
 
 # デフォルトの挙動いいのあれば採用したい。
@@ -26,6 +26,7 @@ parse() {
     rm) SUBCOM=rm; shift; ARGS="$@"; break ;;
     edit) SUBCOM=edit; shift; ARGS="$@"; break ;;
     show) SUBCOM=show; shift; ARGS="$@"; break ;;
+    env) SUBCOM=env; shift; ARGS="$@"; break ;;
     *)
       echo "Unknown option: $1" >&2
       exit 1
@@ -48,6 +49,14 @@ NAME=$(echo "${NAME}" | tr '[:upper:]' '[:lower:]')
 CONF="${BASE}/${NAME}.mk"
 
 mkdir -p "${BASE}"
+
+### サブコマンド：env
+if [ "${SUBCOM}" = "env" ]; then
+  printf "BASE='%s'\n" "${BASE}"
+  printf "NAME='%s'\n" "${NAME}"
+  printf "CONF='%s'\n" "${CONF}"
+  exit 0
+fi
 
 ### サブコマンド：new
 if [ "${SUBCOM}" = "new" ]; then
