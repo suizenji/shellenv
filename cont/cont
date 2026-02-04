@@ -28,4 +28,9 @@ if [ ! -e "${CONF}" ]; then
   exit 1
 fi
 
+# 環境変数CONT_VMが設定されている場合はVM変数として渡す
+if [ -n "${CONT_VM}" ]; then
+  set -- VM="${CONT_VM}" "$@"
+fi
+
 make -f "${CONF}" "$@"
