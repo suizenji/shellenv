@@ -20,11 +20,11 @@ fi
 
 ### main proc
 WORK_DIR=$(dirname "$0")
-eval "$("${WORK_DIR}/cont-conf" env)"
+eval "$("${WORK_DIR}/cconf" env)"
 
 if [ ! -e "${CONF}" ]; then
   echo "Error: Configuration file does not exist: ${CONF}" >&2
-  echo "Create it with: ${CMD_NAME}-conf new" >&2
+  echo "Create it with: cconf new" >&2
   exit 1
 fi
 
