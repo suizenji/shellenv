@@ -58,8 +58,9 @@ set opts_list {
     }
 }
 
-set opts [dict get [dict get $opts_list $subcom] opts]
-set usage [dict get [dict get $opts_list $subcom] usage]
+set subcom_spec [dict get $opts_list $subcom]
+set opts [dict get $subcom_spec opts]
+set usage [dict get $subcom_spec usage]
 
 try {
     array set params [::cmdline::getoptions argv $opts $usage]
@@ -94,6 +95,28 @@ if {[llength $config_list] >= 2 && [dict get [lindex $config_list 0] id] < [dict
 }
 
 ### subcom
+set msg_no_data "no detached data."
+set msg_exists "restore failed: file already exists:"
+
+proc do_restore {from to copy_only} {
+    if {[file exists $to]} {
+	puts stderr "$::msg_exists $to"
+	return 0
+    }
+    if {$copy_only} {
+	if {[catch {file copy $from $to} err]} {
+	    puts stderr $err
+	    return 0
+	}
+    } else {
+	if {[catch {file rename $from $to} err]} {
+	    puts stderr $err
+	    return 0
+	}
+    }
+    return 1
+}
+
 proc update_config {config_list} {
     global filepath
 
@@ -153,10 +176,10 @@ proc find_config {&config_list id} {
 }
 
 proc pop {} {
-    global argv basepath config_list params
+    global argv basepath config_list params msg_no_data
 
     if {[llength $config_list] < 1} {
-	puts stderr "no detached data."
+	puts stderr $msg_no_data
 	exit 1
     }
 
@@ -172,13 +195,10 @@ proc pop {} {
 	set n [llength $config_list]
     }
 
-    set delete_only 0
-    if {[info exists params(d)] && $params(d)} { set delete_only 1 }
-    set copy_only 0
-    if {[info exists params(c)] && $params(c)} { set copy_only 1 }
+    set delete_only [expr {[info exists params(d)] && $params(d)}]
+    set copy_only [expr {[info exists params(c)] && $params(c)}]
 
     set restore_failed 0
-    # Pop first n (newest first); remove from high index to low (unless -c)
     set to_pop [lrange $config_list 0 [expr {$n - 1}]]
     for {set i [expr {$n - 1}]} {$i >= 0} {incr i -1} {
 	set config [lindex $to_pop $i]
@@ -188,46 +208,23 @@ proc pop {} {
 	    if {[catch {file delete -force $from} err]} {
 		puts stderr $err
 		set restore_failed 1
-		continue
 	    }
-	} elseif {$copy_only} {
-	    set to [dict get $config org]
-	    if {[file exists $to]} {
-		puts stderr "restore failed: file already exists: $to"
-		set restore_failed 1
-		continue
-	    }
-	    if {[catch {file copy $from $to} err]} {
-		puts stderr $err
-		set restore_failed 1
-		continue
-	    }
-	    # don't remove from config_list
-	    continue
+	    set config_list [lreplace $config_list $i $i]
+	} elseif {[do_restore $from [dict get $config org] $copy_only]} {
+	    if {!$copy_only} { set config_list [lreplace $config_list $i $i] }
 	} else {
-	    set to [dict get $config org]
-	    if {[file exists $to]} {
-		puts stderr "restore failed: file already exists: $to"
-		set restore_failed 1
-		continue
-	    }
-	    if {[catch {file rename $from $to} err]} {
-		puts stderr $err
-		set restore_failed 1
-		continue
-	    }
+	    set restore_failed 1
 	}
-	set config_list [lreplace $config_list $i $i]
     }
     if {!$copy_only} { update_config $config_list }
     if {$restore_failed} { exit 1 }
 }
 
 proc get {} {
-    global argv basepath config_list params
+    global argv basepath config_list params msg_no_data
 
     if {[llength $config_list] < 1} {
-	puts stderr "no detached data."
+	puts stderr $msg_no_data
 	exit 1
     }
     if {[llength $argv] < 1} {
@@ -235,9 +232,7 @@ proc get {} {
 	exit 1
     }
 
-    set copy_only 0
-    if {[info exists params(c)] && $params(c)} { set copy_only 1 }
-
+    set copy_only [expr {[info exists params(c)] && $params(c)}]
     set restore_failed 0
     set to_remove [list]
     foreach id $argv {
@@ -247,33 +242,15 @@ proc get {} {
 	    set restore_failed 1
 	    continue
 	}
-
 	set config [dict get $config_info config]
 	set from "${basepath}/${id}"
 	set to [dict get $config org]
-
-	if {[file exists $to]} {
-	    puts stderr "restore failed: file already exists: $to"
-	    set restore_failed 1
-	    continue
-	}
-	if {$copy_only} {
-	    if {[catch {file copy $from $to} err]} {
-		puts stderr $err
-		set restore_failed 1
-		continue
-	    }
+	if {[do_restore $from $to $copy_only]} {
+	    if {!$copy_only} { lappend to_remove [dict get $config_info index] }
 	} else {
-	    if {[catch {file rename $from $to} err]} {
-		puts stderr $err
-		set restore_failed 1
-		continue
-	    }
-	    set delid [dict get $config_info index]
-	    lappend to_remove $delid
+	    set restore_failed 1
 	}
     }
-    # Remove in descending index order so indices stay valid
     foreach delid [lsort -integer -decreasing $to_remove] {
 	set config_list [lreplace $config_list $delid $delid]
     }
