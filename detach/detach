@@ -19,7 +19,7 @@ if {$subcom == "help" || $subcom == "-h"} {
 subcommands:
 	ls:		list detached files (id and original path)
 	detach:		detach files (default)
-	pop:		restore detached files by id (default: last)
+	pop:		restore n most recent (default: 1)
 	get:		restore detached files by id (id required, multiple ok)
 	clear:		remove detached files without restoring (default: last)
 	help:		show this help"
@@ -38,10 +38,8 @@ set opts_list {
 	opts {}
     }
     pop {
-	usage "pop [opts] [id..]"
-	opts {
-	    {a "pop all files"}
-	}
+	usage "pop [n]"
+	opts {}
     }
     clear {
 	usage "clear [opts] [id..]"
@@ -150,42 +148,38 @@ proc find_config {&config_list id} {
 }
 
 proc pop {} {
-    global argv basepath config_list params
+    global argv basepath config_list
 
     if {[llength $config_list] < 1} {
 	puts stderr "detached data is not exists."
 	exit 1
     }
 
-    if {$params(a)} {
-	set id_list [lmap config $config_list {dict get $config id}]
-    } elseif {[llength $argv] < 1} {
-	set id_list [dict get [lindex $config_list 0] id]
-    } else {
-	set id_list $argv
+    set n 1
+    if {[llength $argv] >= 1} {
+	if {![string is integer -strict [lindex $argv 0]] || [lindex $argv 0] < 1} {
+	    puts stderr "pop: n must be a positive integer."
+	    exit 1
+	}
+	set n [lindex $argv 0]
+    }
+    if {$n > [llength $config_list]} {
+	set n [llength $config_list]
     }
 
-    foreach id $id_list {
-	set config_info [find_config config_list $id]
-	if {$config_info == ""} {
-	    puts stderr "ID $id is not found."
-	    continue
-	}
-
-	set config [dict get $config_info config]
+    # Pop first n (newest first); remove from high index to low
+    set to_pop [lrange $config_list 0 [expr {$n - 1}]]
+    for {set i [expr {$n - 1}]} {$i >= 0} {incr i -1} {
+	set config [lindex $to_pop $i]
+	set id [dict get $config id]
 	set from "${basepath}/${id}"
 	set to [dict get $config org]
-
 	if {[catch {file rename $from $to} err]} {
 	    puts stderr $err
 	    continue
 	}
-
-	# update
-	set delid [dict get $config_info index]
-	set config_list [lreplace $config_list $delid $delid]
+	set config_list [lreplace $config_list $i $i]
     }
-
     update_config $config_list
 }
 
