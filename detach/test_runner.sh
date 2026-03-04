@@ -101,6 +101,21 @@ touch "$HOME/work/dummy"
 test_case "pop invalid id prints error" "$DETACH" pop 999 2>&1 | grep -q "not found"
 "$DETACH" clear >/dev/null 2>&1
 
+# --- get ---
+echo ""
+echo "--- get ---"
+touch "$HOME/work/g1"
+touch "$HOME/work/g2"
+"$DETACH" "$HOME/work/g1" "$HOME/work/g2" >/dev/null 2>&1
+test_case "get requires at least one id" assert_exit 1 "$DETACH" get
+test_case "get restores by id" assert_exit 0 "$DETACH" get 2
+test_case "g2 restored by get" assert_file_exists "$HOME/work/g2"
+test_case "get restores multiple ids" assert_exit 0 "$DETACH" get 1
+test_case "g1 restored by get" assert_file_exists "$HOME/work/g1"
+test_case "get multiple in one call" assert_exit 0 "$DETACH" "$HOME/work/g1" "$HOME/work/g2" && "$DETACH" get 2 1
+test_case "both restored by get 2 1" assert_file_exists "$HOME/work/g1" && assert_file_exists "$HOME/work/g2"
+"$DETACH" clear -a >/dev/null 2>&1 || true
+
 # --- clear ---
 echo ""
 echo "--- clear ---"

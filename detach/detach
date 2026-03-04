@@ -4,7 +4,7 @@ package require cmdline
 
 ### opts analyze
 # parent analyze
-set subcoms {ls detach pop clear help -h}
+set subcoms {ls detach pop clear get help -h}
 
 if {[lsearch $subcoms [lindex $argv 0]] >= 0} {
     set subcom [lindex $argv 0]
@@ -20,6 +20,7 @@ subcommands:
 	ls:		list detached files (id and original path)
 	detach:		detach files (default)
 	pop:		restore detached files by id (default: last)
+	get:		restore detached files by id (id required, multiple ok)
 	clear:		remove detached files without restoring (default: last)
 	help:		show this help"
 
@@ -47,6 +48,10 @@ set opts_list {
 	opts {
 	    {a "clear all files"}
 	}
+    }
+    get {
+	usage "get id.."
+	opts {}
     }
 }
 
@@ -184,6 +189,41 @@ proc pop {} {
     update_config $config_list
 }
 
+proc get {} {
+    global argv basepath config_list
+
+    if {[llength $config_list] < 1} {
+	puts stderr "detached data is not exists."
+	exit 1
+    }
+    if {[llength $argv] < 1} {
+	puts stderr "get requires at least one id."
+	exit 1
+    }
+
+    foreach id $argv {
+	set config_info [find_config config_list $id]
+	if {$config_info == ""} {
+	    puts stderr "ID $id is not found."
+	    continue
+	}
+
+	set config [dict get $config_info config]
+	set from "${basepath}/${id}"
+	set to [dict get $config org]
+
+	if {[catch {file rename $from $to} err]} {
+	    puts stderr $err
+	    continue
+	}
+
+	set delid [dict get $config_info index]
+	set config_list [lreplace $config_list $delid $delid]
+    }
+
+    update_config $config_list
+}
+
 proc clear {} {
     global argv basepath config_list params
 
@@ -227,5 +267,6 @@ switch $subcom {
 	}
     }
     pop pop
+    get get
     clear clear
 }
