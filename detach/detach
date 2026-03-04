@@ -4,7 +4,7 @@ package require cmdline
 
 ### opts analyze
 # parent analyze
-set subcoms {ls detach pop clear get help -h}
+set subcoms {ls detach pop p clear get help -h}
 
 if {[lsearch $subcoms [lindex $argv 0]] >= 0} {
     set subcom [lindex $argv 0]
@@ -12,6 +12,7 @@ if {[lsearch $subcoms [lindex $argv 0]] >= 0} {
 } else {
     set subcom detach
 }
+if {$subcom == "p"} { set subcom "pop" }
 
 # show help and exit
 if {$subcom == "help" || $subcom == "-h"} {
