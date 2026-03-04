@@ -87,10 +87,20 @@ test_case "ls with no args succeeds" assert_exit 0 "$DETACH" ls
 # --- pop ---
 echo ""
 echo "--- pop ---"
-test_case "pop restores last (default)" assert_exit 0 "$DETACH" pop
+test_case "pop (default 1) restores newest" assert_exit 0 "$DETACH" pop
 test_case "f2 restored" assert_file_exists "$HOME/work/f2"
-test_case "pop restores by id" assert_exit 0 "$DETACH" pop 1
+test_case "pop 1 restores one more" assert_exit 0 "$DETACH" pop 1
 test_case "f1 restored" assert_file_exists "$HOME/work/f1"
+
+# --- pop N (multiple) ---
+touch "$HOME/work/p1"
+touch "$HOME/work/p2"
+touch "$HOME/work/p3"
+"$DETACH" "$HOME/work/p1" "$HOME/work/p2" "$HOME/work/p3" >/dev/null 2>&1
+test_case "pop 2 restores two newest" assert_exit 0 "$DETACH" pop 2
+test_case "p2 p3 restored by pop 2" assert_file_exists "$HOME/work/p2" && assert_file_exists "$HOME/work/p3" && assert_file_missing "$HOME/work/p1"
+test_case "pop 1 restores remaining" assert_exit 0 "$DETACH" pop 1
+test_case "p1 restored" assert_file_exists "$HOME/work/p1"
 
 # --- pop empty / errors ---
 echo ""
@@ -98,7 +108,14 @@ echo "--- pop error cases ---"
 test_case "pop on empty stash fails" assert_exit 1 "$DETACH" pop
 touch "$HOME/work/dummy"
 "$DETACH" "$HOME/work/dummy" >/dev/null 2>&1
-test_case "pop invalid id prints error" "$DETACH" pop 999 2>&1 | grep -q "not found"
+test_case "pop 0 fails" assert_exit 1 "$DETACH" pop 0
+test_case "pop negative fails" assert_exit 1 "$DETACH" pop -1
+touch "$HOME/work/pd1"
+touch "$HOME/work/pd2"
+"$DETACH" "$HOME/work/pd1" "$HOME/work/pd2" >/dev/null 2>&1
+test_case "pop -d 2 deletes without restoring" assert_exit 0 "$DETACH" pop -d 2
+test_case "pd1 pd2 not restored after pop -d" assert_file_missing "$HOME/work/pd1" && assert_file_missing "$HOME/work/pd2"
+test_case "stash empty after pop -d 2" ! "$DETACH" ls 2>/dev/null | grep -q .
 "$DETACH" clear >/dev/null 2>&1
 
 # --- get ---
@@ -124,6 +141,15 @@ touch "$HOME/work/c1"
 test_case "clear removes one" assert_exit 0 "$DETACH" clear
 test_case "cleared file is gone" assert_file_missing "$HOME/.detach/3"
 test_case "c1 not restored" assert_file_missing "$HOME/work/c1"
+
+# --- clear multiple ids ---
+touch "$HOME/work/cm1"
+touch "$HOME/work/cm2"
+touch "$HOME/work/cm3"
+"$DETACH" "$HOME/work/cm1" "$HOME/work/cm2" "$HOME/work/cm3" >/dev/null 2>&1
+test_case "clear 2 1 removes by two ids" assert_exit 0 "$DETACH" clear 2 1
+test_case "only cm3 (id 3) remains after clear 2 1" [ "$("$DETACH" ls 2>/dev/null | wc -l)" -eq 1 ] && "$DETACH" ls 2>/dev/null | grep -q "cm3"
+"$DETACH" clear -a >/dev/null 2>&1
 
 # --- clear -a ---
 touch "$HOME/work/d1"

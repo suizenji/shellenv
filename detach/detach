@@ -21,7 +21,7 @@ subcommands:
 	detach:		detach files (default)
 	pop:		restore n most recent (default: 1)
 	get:		restore detached files by id (id required, multiple ok)
-	clear:		remove detached files without restoring (default: last)
+	clear:		remove without restoring (id.. or -a; default: last)
 	help:		show this help"
 
     exit 1
@@ -38,8 +38,10 @@ set opts_list {
 	opts {}
     }
     pop {
-	usage "pop [n]"
-	opts {}
+	usage "pop [-d] [n]"
+	opts {
+	    {d "delete without restoring"}
+	}
     }
     clear {
 	usage "clear [opts] [id..]"
@@ -148,7 +150,7 @@ proc find_config {&config_list id} {
 }
 
 proc pop {} {
-    global argv basepath config_list
+    global argv basepath config_list params
 
     if {[llength $config_list] < 1} {
 	puts stderr "detached data is not exists."
@@ -167,16 +169,26 @@ proc pop {} {
 	set n [llength $config_list]
     }
 
+    set delete_only 0
+    if {[info exists params(d)] && $params(d)} { set delete_only 1 }
+
     # Pop first n (newest first); remove from high index to low
     set to_pop [lrange $config_list 0 [expr {$n - 1}]]
     for {set i [expr {$n - 1}]} {$i >= 0} {incr i -1} {
 	set config [lindex $to_pop $i]
 	set id [dict get $config id]
 	set from "${basepath}/${id}"
-	set to [dict get $config org]
-	if {[catch {file rename $from $to} err]} {
-	    puts stderr $err
-	    continue
+	if {$delete_only} {
+	    if {[catch {file delete -force $from} err]} {
+		puts stderr $err
+		continue
+	    }
+	} else {
+	    set to [dict get $config org]
+	    if {[catch {file rename $from $to} err]} {
+		puts stderr $err
+		continue
+	    }
 	}
 	set config_list [lreplace $config_list $i $i]
     }
