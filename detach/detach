@@ -19,8 +19,8 @@ if {$subcom == "help" || $subcom == "-h"} {
 subcommands:
 	ls:		list detached files (id and original path)
 	detach:		detach files (default)
-	pop:		restore n most recent (default: 1)
-	get:		restore detached files by id (id required, multiple ok)
+	pop:		restore n most recent (default: 1); -c copy, -d delete
+	get:		restore by id (id required); -c copy without consuming
 	clear:		remove without restoring (id.. or -a; default: last)
 	help:		show this help"
 
@@ -38,9 +38,10 @@ set opts_list {
 	opts {}
     }
     pop {
-	usage "pop [-d] [n]"
+	usage "pop [-d] [-c] [n]"
 	opts {
 	    {d "delete without restoring"}
+	    {c "copy to restore (keep in stash)"}
 	}
     }
     clear {
@@ -50,8 +51,10 @@ set opts_list {
 	}
     }
     get {
-	usage "get id.."
-	opts {}
+	usage "get [-c] id.."
+	opts {
+	    {c "copy to restore (keep in stash)"}
+	}
     }
 }
 
@@ -171,8 +174,10 @@ proc pop {} {
 
     set delete_only 0
     if {[info exists params(d)] && $params(d)} { set delete_only 1 }
+    set copy_only 0
+    if {[info exists params(c)] && $params(c)} { set copy_only 1 }
 
-    # Pop first n (newest first); remove from high index to low
+    # Pop first n (newest first); remove from high index to low (unless -c)
     set to_pop [lrange $config_list 0 [expr {$n - 1}]]
     for {set i [expr {$n - 1}]} {$i >= 0} {incr i -1} {
 	set config [lindex $to_pop $i]
@@ -183,6 +188,14 @@ proc pop {} {
 		puts stderr $err
 		continue
 	    }
+	} elseif {$copy_only} {
+	    set to [dict get $config org]
+	    if {[catch {file copy -force $from $to} err]} {
+		puts stderr $err
+		continue
+	    }
+	    # don't remove from config_list
+	    continue
 	} else {
 	    set to [dict get $config org]
 	    if {[catch {file rename $from $to} err]} {
@@ -192,11 +205,11 @@ proc pop {} {
 	}
 	set config_list [lreplace $config_list $i $i]
     }
-    update_config $config_list
+    if {!$copy_only} { update_config $config_list }
 }
 
 proc get {} {
-    global argv basepath config_list
+    global argv basepath config_list params
 
     if {[llength $config_list] < 1} {
 	puts stderr "detached data is not exists."
@@ -207,6 +220,10 @@ proc get {} {
 	exit 1
     }
 
+    set copy_only 0
+    if {[info exists params(c)] && $params(c)} { set copy_only 1 }
+
+    set to_remove [list]
     foreach id $argv {
 	set config_info [find_config config_list $id]
 	if {$config_info == ""} {
@@ -218,16 +235,25 @@ proc get {} {
 	set from "${basepath}/${id}"
 	set to [dict get $config org]
 
-	if {[catch {file rename $from $to} err]} {
-	    puts stderr $err
-	    continue
+	if {$copy_only} {
+	    if {[catch {file copy -force $from $to} err]} {
+		puts stderr $err
+		continue
+	    }
+	} else {
+	    if {[catch {file rename $from $to} err]} {
+		puts stderr $err
+		continue
+	    }
+	    set delid [dict get $config_info index]
+	    lappend to_remove $delid
 	}
-
-	set delid [dict get $config_info index]
+    }
+    # Remove in descending index order so indices stay valid
+    foreach delid [lsort -integer -decreasing $to_remove] {
 	set config_list [lreplace $config_list $delid $delid]
     }
-
-    update_config $config_list
+    if {[llength $to_remove] > 0} { update_config $config_list }
 }
 
 proc clear {} {

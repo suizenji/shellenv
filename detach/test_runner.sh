@@ -133,6 +133,23 @@ test_case "get multiple in one call" assert_exit 0 "$DETACH" "$HOME/work/g1" "$H
 test_case "both restored by get 2 1" assert_file_exists "$HOME/work/g1" && assert_file_exists "$HOME/work/g2"
 "$DETACH" clear -a >/dev/null 2>&1 || true
 
+# --- get -c (copy, keep in stash) ---
+touch "$HOME/work/gc1"
+"$DETACH" "$HOME/work/gc1" >/dev/null 2>&1
+test_case "get -c copies to org" assert_exit 0 "$DETACH" get -c 1
+test_case "gc1 exists after get -c" assert_file_exists "$HOME/work/gc1"
+test_case "get -c keeps entry in stash" [ "$("$DETACH" ls 2>/dev/null | wc -l)" -eq 1 ]
+"$DETACH" clear -a >/dev/null 2>&1 || true
+
+# --- pop -c (copy, keep in stash) ---
+touch "$HOME/work/pc1"
+touch "$HOME/work/pc2"
+"$DETACH" "$HOME/work/pc1" "$HOME/work/pc2" >/dev/null 2>&1
+test_case "pop -c 1 copies one to org" assert_exit 0 "$DETACH" pop -c 1
+test_case "pc2 exists after pop -c 1" assert_file_exists "$HOME/work/pc2"
+test_case "pop -c keeps entries in stash" [ "$("$DETACH" ls 2>/dev/null | wc -l)" -eq 2 ]
+"$DETACH" clear -a >/dev/null 2>&1 || true
+
 # --- clear ---
 echo ""
 echo "--- clear ---"
