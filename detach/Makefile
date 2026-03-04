@@ -3,7 +3,11 @@ install: ../bin/detach
 ../bin/detach: detach
 	cp $< $@
 
-test:
+test: test_runner.sh
+	./test_runner.sh
+
+# Legacy test (uses real ~/.detach; run manually if needed)
+test-legacy:
 	mkdir file1
 	touch file1/file file2
 	./detach file1 file2
