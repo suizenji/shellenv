@@ -150,6 +150,20 @@ test_case "pc2 exists after pop -c 1" assert_file_exists "$HOME/work/pc2"
 test_case "pop -c keeps entries in stash" [ "$("$DETACH" ls 2>/dev/null | wc -l)" -eq 2 ]
 "$DETACH" clear -a >/dev/null 2>&1 || true
 
+# --- restore fails when destination exists ---
+touch "$HOME/work/exist"
+"$DETACH" "$HOME/work/exist" >/dev/null 2>&1
+touch "$HOME/work/exist"
+test_case "get fails when dest exists" assert_exit 1 "$DETACH" get 1
+test_case "dest still exists after failed get" assert_file_exists "$HOME/work/exist"
+rm -f "$HOME/work/exist"
+"$DETACH" get 1 >/dev/null 2>&1
+touch "$HOME/work/exist"
+"$DETACH" "$HOME/work/exist" >/dev/null 2>&1
+touch "$HOME/work/exist"
+test_case "pop fails when dest exists" assert_exit 1 "$DETACH" pop
+"$DETACH" clear -a >/dev/null 2>&1 || true
+
 # --- clear ---
 echo ""
 echo "--- clear ---"
