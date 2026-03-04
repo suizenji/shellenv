@@ -80,6 +80,10 @@ foreach line [split $raw \n] {
 	lappend config_list $line
     }
 }
+# Keep newest first (descending id) for ls visibility and stack-like pop
+if {[llength $config_list] >= 2 && [dict get [lindex $config_list 0] id] < [dict get [lindex $config_list end] id]} {
+    set config_list [lreverse $config_list]
+}
 
 ### subcom
 proc update_config {config_list} {
@@ -95,7 +99,7 @@ proc update_config {config_list} {
 
 proc get_max_id {basepath config_list} {
     set max 0
-    if {[llength $config_list] > 0 && ![catch {dict get [lindex $config_list end] id} id]} {
+    if {[llength $config_list] > 0 && ![catch {dict get [lindex $config_list 0] id} id]} {
 	set max $id
     }
     if {[file isdirectory $basepath]} {
@@ -122,8 +126,8 @@ proc detach {} {
 	    continue
 	}
 
-	# lappend config {id, file}
-	lappend config_list [list id $id_end org [file normalize $file]]
+	# prepend so newest is first (stack order)
+	set config_list [linsert $config_list 0 [list id $id_end org [file normalize $file]]]
     }
 
     update_config $config_list
@@ -151,7 +155,7 @@ proc pop {} {
     if {$params(a)} {
 	set id_list [lmap config $config_list {dict get $config id}]
     } elseif {[llength $argv] < 1} {
-	set id_list [dict get [lindex $config_list end] id]
+	set id_list [dict get [lindex $config_list 0] id]
     } else {
 	set id_list $argv
     }
@@ -186,7 +190,7 @@ proc clear {} {
     if {$params(a)} {
 	set id_list [lmap config $config_list {dict get $config id}]
     } elseif {[llength $argv] < 1} {
-	set id_list [dict get [lindex $config_list end] id]
+	set id_list [dict get [lindex $config_list 0] id]
     } else {
 	set id_list $argv
     }

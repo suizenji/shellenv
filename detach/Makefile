@@ -19,8 +19,13 @@ test-legacy:
 	./detach clear
 	! ./detach ls | grep '/detach/file1'
 
+test-sample:
+	echo 1 > first.txt
+	echo 2 > second.txt
+	echo 3 > third.txt
+
 clean:
-	rm -rf file1 file2
+	rm -rf file1 file2 first.txt second.txt third.txt
 
 uninstall: clean
 	rm -rf ~/.detach
