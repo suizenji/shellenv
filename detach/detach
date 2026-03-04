@@ -24,7 +24,7 @@ subcommands:
 	clear:		remove without restoring (id.. or -a; default: last)
 	help:		show this help"
 
-    exit 1
+    exit 0
 }
 
 # child analyze
@@ -156,7 +156,7 @@ proc pop {} {
     global argv basepath config_list params
 
     if {[llength $config_list] < 1} {
-	puts stderr "detached data is not exists."
+	puts stderr "no detached data."
 	exit 1
     }
 
@@ -227,7 +227,7 @@ proc get {} {
     global argv basepath config_list params
 
     if {[llength $config_list] < 1} {
-	puts stderr "detached data is not exists."
+	puts stderr "no detached data."
 	exit 1
     }
     if {[llength $argv] < 1} {
