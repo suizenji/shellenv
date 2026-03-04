@@ -15,12 +15,12 @@ if {[lsearch $subcoms [lindex $argv 0]] >= 0} {
 
 # show help and exit
 if {$subcom == "help" || $subcom == "-h"} {
-    puts stderr "Usage: $argv0 \[subcom]
+    puts stderr "Usage: $argv0 \[subcom] ...
 subcommands:
-	ls:		list detached files
+	ls:		list detached files (id and original path)
 	detach:		detach files (default)
-	pop:		pop detached files
-	clear:		clear detached files
+	pop:		restore detached files by id (default: last)
+	clear:		remove detached files without restoring (default: last)
 	help:		show this help"
 
     exit 1
@@ -29,23 +29,21 @@ subcommands:
 # child analyze
 set opts_list {
     ls {
-	usage "ls [opts] file.."
-	opts {
-	    {l "show details"}
-	}
+	usage "ls [opts]"
+	opts {}
     }
     detach {
 	usage "[detach] file.."
 	opts {}
     }
     pop {
-	usage "pop [opts] [file..]"
+	usage "pop [opts] [id..]"
 	opts {
 	    {a "pop all files"}
 	}
     }
     clear {
-	usage "clear [opts] file.."
+	usage "clear [opts] [id..]"
 	opts {
 	    {a "clear all files"}
 	}
@@ -63,7 +61,7 @@ try {
 }
 
 ### init
-set basepath "~/.detach"
+set basepath [file normalize "~/.detach"]
 set filepath "${basepath}/config.list"
 
 if {![file exists $filepath]} {
@@ -73,8 +71,15 @@ if {![file exists $filepath]} {
     set fp [open $filepath r]
 }
 
-set config_list [read $fp]
+set raw [read $fp]
 close $fp
+set config_list [list]
+foreach line [split $raw \n] {
+    set line [string trim $line]
+    if {$line ne ""} {
+	lappend config_list $line
+    }
+}
 
 ### subcom
 proc update_config {config_list} {
@@ -82,21 +87,34 @@ proc update_config {config_list} {
 
     set fp [open $filepath w]
     foreach config $config_list {
-        puts $fp [list $config]
+	# Write one line per config (no extra [list] so read-back parses as dict)
+	puts $fp $config
     }
     close $fp
+}
+
+proc get_max_id {basepath config_list} {
+    set max 0
+    if {[llength $config_list] > 0 && ![catch {dict get [lindex $config_list end] id} id]} {
+	set max $id
+    }
+    if {[file isdirectory $basepath]} {
+	foreach f [glob -nocomplain -directory $basepath *] {
+	    if {[string is integer -strict [file tail $f]] && [file tail $f] > $max} {
+		set max [file tail $f]
+	    }
+	}
+    }
+    return $max
 }
 
 proc detach {} {
     global argv basepath config_list
 
-    # get last id
-    if {[catch {set id_end [dict get [lindex $config_list end] id]}]} {
-	set id_end 0
-    }
+    set id_end [get_max_id $basepath $config_list]
 
     foreach file $argv {
-	set id_end [expr $id_end + 1]
+	set id_end [expr {$id_end + 1}]
 
 	# file move
 	if {[catch {file rename $file "${basepath}/${id_end}"} err]} {
@@ -149,12 +167,9 @@ proc pop {} {
 	set from "${basepath}/${id}"
 	set to [dict get $config org]
 
-	if {[catch {[file rename $from $to]} err]} {
-	    # FIXME: what is 'invalid command name ""'?
-	    if {$err != "invalid command name \"\""} {
-		puts stderr $err
-		continue
-	    }
+	if {[catch {file rename $from $to} err]} {
+	    puts stderr $err
+	    continue
 	}
 
 	# update
@@ -186,12 +201,9 @@ proc clear {} {
 	set config [dict get $config_info config]
 	set file "${basepath}/${id}"
 
-	if {[catch {[file delete -force $file]} err]} {
-	    # FIXME: what is 'invalid command name ""'?
-	    if {$err != "invalid command name \"\""} {
-		puts stderr $err
-		continue
-	    }
+	if {[catch {file delete -force $file} err]} {
+	    puts stderr $err
+	    continue
 	}
 
 	# update

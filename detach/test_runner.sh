@@ -82,7 +82,7 @@ echo "--- ls ---"
 ls_out=$("$DETACH" ls)
 test_case "ls lists entries" echo "$ls_out" | assert_stdout_contains "1"
 test_case "ls shows original path" echo "$ls_out" | grep -q "work/f1" || echo "$ls_out" | grep -q "work/f2"
-test_case "ls accepts -l (no error)" assert_exit 0 "$DETACH" ls -l
+test_case "ls with no args succeeds" assert_exit 0 "$DETACH" ls
 
 # --- pop ---
 echo ""
