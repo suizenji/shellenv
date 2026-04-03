@@ -1,0 +1,8 @@
+# https://zenn.dev/yuichi_ai/articles/npm-audit-limitations-real-security-2026
+ignore-scripts=true
+audit-level=moderate
+min-release-age=3
+audit=true
+
+# npm rebuild xxx
+# npm audit signatures
