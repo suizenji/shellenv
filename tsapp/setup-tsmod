@@ -39,12 +39,11 @@ module.exports = {
 endef
 export LINTSTAGEDRC
 
-husky: .husky .husky/pre-commit .lintstagedrc.js
+husky: .husky .lintstagedrc.js
 .husky:
-	npm install -D husky
+	npm install -D husky lint-staged
 	npx husky init
-.husky/pre-commit: .husky
-	echo 'npx lint-staged' > $@
+	echo 'npx lint-staged' > .husky/pre-commit
 .lintstagedrc.js:
 	echo "$$LINTSTAGEDRC" > $@
 
