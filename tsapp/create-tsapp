@@ -22,6 +22,7 @@ fi
 
 PJ=${1:-app}
 SED=$(which gsed >/dev/null && echo gsed || echo sed)
+set -e
 
 # create a project
 mkdir -p "${PJ}"
@@ -44,24 +45,33 @@ s:index.js:./dist/index.js:
 EOF
 ) package.json
 
-npm i -D typescript @types/node ts-node tsconfig-paths tsc-alias nodemon
+# typescript@6: v7 drops the compiler API (ts.sys), so ts-node cannot load it.
+npm i -D typescript@6 @types/node ts-node tsconfig-paths tsc-alias nodemon jsonc-parser
 
 # tsconfig setup
 npx tsc --init --outDir ./dist --incremental true --resolveJsonModule true
 
-${SED} -i -f <(cat <<EOF
-/"paths":/ {
-  a\    "paths": {
-  a\      "@/*": ["${SRC}/*"]
-  a\    },
+# Patch JSONC in place (keep `tsc --init` comments). Sed cannot add paths when the template omits "paths".
+# Do not set baseUrl or moduleResolution=node10: both are removed in TypeScript 7 and error in 6.
+TSAPP_SRC="${SRC}" node <<'NODE'
+const fs = require('fs');
+const jsonc = require('jsonc-parser');
+const src = process.env.TSAPP_SRC;
+const p = 'tsconfig.json';
+let text = fs.readFileSync(p, 'utf8');
+const opts = { formattingOptions: { insertSpaces: true, tabSize: 2 } };
+for (const [path, value] of [
+  [['compilerOptions', 'rootDir'], src],
+  [['compilerOptions', 'module'], 'commonjs'],
+  [['compilerOptions', 'moduleResolution'], 'bundler'],
+  [['compilerOptions', 'verbatimModuleSyntax'], false],
+  [['compilerOptions', 'types'], ['node']],
+  [['compilerOptions', 'paths'], { '@/*': [`${src}/*`] }],
+  [['ts-node'], { require: ['tsconfig-paths/register'] }]]) {
+  text = jsonc.applyEdits(text, jsonc.modify(text, path, value, opts));
 }
-/^{/ {
-  a\  "ts-node": {
-  a\    "require": ["tsconfig-paths/register"]
-  a\  },
-}
-EOF
-) tsconfig.json
+fs.writeFileSync(p, text);
+NODE
 
 # builder
 cat <<'EOF' > Makefile
