@@ -7,6 +7,7 @@ parse() {
     case "$1" in
     -h | --help) FLAG_HELP=1; shift ;;
     --with-src) SRC='./src'; shift ;;
+    --no-git) FLAG_NO_GIT=1; shift ;;
     --) shift; ARGS="$ARGS $@"; break ;;
     *) ARGS="$ARGS $1"; shift ;;
     esac
@@ -16,7 +17,7 @@ parse "$@"
 set -- $ARGS
 
 if [ "$FLAG_HELP" == "1" ]; then
-  echo 'usage: command [--with-src] [project]'
+  echo 'usage: command [--with-src] [--no-git] [project]'
   exit
 fi
 
@@ -89,7 +90,9 @@ EOF
 touch .gitignore
 echo /node_modules >> .gitignore
 echo /dist >> .gitignore
-git init && git add . && git commit -m 'first commit'
+if [ "$FLAG_NO_GIT" != "1" ]; then
+  git init && git add . && git commit -m 'first commit'
+fi
 
 # test
 mkdir -p "${SRC}"
