@@ -40,19 +40,19 @@ ${SED} -i -f <(cat <<EOF
 s:index.js:./dist/index.js:
 /"scripts":/ {
   a\    "start": "node ./dist",
-  a\    "dev": "NODE_ENV=development npx nodemon --watch './**/*.ts' --exec ts-node ${SRC}/index.ts",
+  a\    "dev": "NODE_ENV=development npx nodemon --watch ${SRC} --ext ts --exec 'npx tsc --noEmit && npx tsx ${SRC}/index.ts'",
 }
 EOF
 ) package.json
 
-# typescript@6: v7 drops the compiler API (ts.sys), so ts-node cannot load it.
-npm i -D typescript@6 @types/node ts-node tsconfig-paths tsc-alias nodemon jsonc-parser
+# typescript@7. ts-node needs ts.sys, which v7 removed, so dev typechecks with tsc and runs with tsx.
+npm i -D typescript@7 @types/node tsx tsc-alias nodemon jsonc-parser
 
 # tsconfig setup
 npx tsc --init --outDir ./dist --incremental true --resolveJsonModule true
 
 # Patch JSONC in place (keep `tsc --init` comments). Sed cannot add paths when the template omits "paths".
-# Do not set baseUrl or moduleResolution=node10: both are removed in TypeScript 7 and error in 6.
+# Do not set baseUrl or moduleResolution=node10: TypeScript 7 removed both.
 TSAPP_SRC="${SRC}" node <<'NODE'
 const fs = require('fs');
 const jsonc = require('jsonc-parser');
@@ -62,12 +62,12 @@ let text = fs.readFileSync(p, 'utf8');
 const opts = { formattingOptions: { insertSpaces: true, tabSize: 2 } };
 for (const [path, value] of [
   [['compilerOptions', 'rootDir'], src],
+  [['compilerOptions', 'tsBuildInfoFile'], './dist/tsconfig.tsbuildinfo'],
   [['compilerOptions', 'module'], 'commonjs'],
   [['compilerOptions', 'moduleResolution'], 'bundler'],
   [['compilerOptions', 'verbatimModuleSyntax'], false],
   [['compilerOptions', 'types'], ['node']],
-  [['compilerOptions', 'paths'], { '@/*': [`${src}/*`] }],
-  [['ts-node'], { require: ['tsconfig-paths/register'] }]]) {
+  [['compilerOptions', 'paths'], { '@/*': [`${src}/*`] }]]) {
   text = jsonc.applyEdits(text, jsonc.modify(text, path, value, opts));
 }
 fs.writeFileSync(p, text);
@@ -94,7 +94,7 @@ git init && git add . && git commit -m 'first commit'
 # test
 mkdir -p "${SRC}"
 
-echo "import { module } from '@/module'
+echo "import { module } from '@/module';
 module();" > "${SRC}/index.ts"
 
 echo "export function module() {
